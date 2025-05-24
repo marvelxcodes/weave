@@ -55,40 +55,10 @@ export async function POST(
       );
     }
 
-    // Check user credits
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { credits: true }
-    });
-
-    if (!user || user.credits < 1) {
-      return NextResponse.json(
-        { error: 'Insufficient credits' },
-        { status: 400 }
-      );
-    }
-
     const nextOrder = story.chapters.length > 0 ? story.chapters[0].order + 1 : 1;
 
     // Generate new chapter in a transaction
     const result = await prisma.$transaction(async (tx) => {
-      // Deduct credit
-      await tx.user.update({
-        where: { id: userId },
-        data: { credits: { decrement: 1 } }
-      });
-
-      // Create credit history
-      await tx.creditHistory.create({
-        data: {
-          userId: userId,
-          amount: -1,
-          type: 'SPENT',
-          description: `Chapter ${nextOrder} generation`,
-          storyId: story.id
-        }
-      });
-
       // Generate chapter content (mock for now)
       const mockContinuations = [
         "The path you've chosen leads to unexpected discoveries. As you venture forward, the landscape around you begins to shift and change, revealing new mysteries at every turn. The air grows thick with anticipation as you realize that your decisions have set into motion events that cannot be undone.",

@@ -12,19 +12,12 @@ A beautiful interactive 3D storytelling website where users can create immersive
 ### 📚 **Story Creation System**
 - AI-powered story generation (currently with mock data)
 - Chapter-by-chapter progression based on user choices
-- Credit-based system for story generation
 - Story history tracking and navigation
 
 ### 🔐 **User Authentication**
 - NextAuth.js integration with credentials and OAuth support
 - User registration with email/password
 - Session management and protected routes
-
-### 💰 **Credit System**
-- Starting credits for new users (10 free credits)
-- 1 credit per chapter generation
-- Credit history tracking
-- Future: Credit purchase system
 
 ### 🌐 **Story Library**
 - Browse public stories created by other users
@@ -108,32 +101,25 @@ Visit `http://localhost:3000` to see the application.
 
 The application uses the following main models:
 
-- **User**: User accounts with credits and authentication
+- **User**: User accounts and authentication
 - **Story**: User-created stories with metadata
 - **Chapter**: Individual story chapters with choices
-- **CreditHistory**: Track credit transactions
 - **StoryLike**: User likes on stories
 
 ## Usage
 
 ### Creating Stories
-1. Sign up for an account (get 10 free credits)
+1. Sign up for an account
 2. Click the magical book in the 3D scene
 3. Enter a story prompt
 4. Make choices to continue the narrative
-5. Each chapter generation costs 1 credit
+5. Create unlimited stories and chapters
 
 ### Reading Stories
 1. Visit the "Browse Stories" page
 2. Search and filter public stories
 3. Click on any story to read for free
 4. Like stories to show appreciation
-
-### Credit System
-- New users start with 10 credits
-- Each chapter generation costs 1 credit
-- Reading stories is always free
-- Future: Credit purchase system
 
 ## Project Structure
 

@@ -34,7 +34,7 @@ export default function SignInPage() {
           router.push('/');
         }
       }
-    } catch (err) {
+    } catch {
       setError('An error occurred. Please try again.');
     } finally {
       setIsLoading(false);
@@ -163,7 +163,7 @@ export default function SignInPage() {
           className="mt-6 text-center"
         >
           <p className="text-amber-300/80 antique-text">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <Link 
               href="/auth/signup" 
               className="text-amber-200 hover:text-amber-100 transition-colors 

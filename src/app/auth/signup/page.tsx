@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import { Lock, Mail, Sparkles, User } from 'lucide-react';
 import Link from 'next/link';
-import { User, Mail, Lock, Sparkles, Gift } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import axios, { AxiosError } from 'axios';
 
 export default function SignUpPage() {
 	const [name, setName] = useState('');
@@ -33,23 +34,18 @@ export default function SignUpPage() {
 		}
 
 		try {
-			const response = await fetch('/api/auth/register', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({ name, email, password }),
+			const response = await axios.post('/api/auth/register', {
+				name,
+				email,
+				password,
 			});
 
-			const data = await response.json();
-
-			if (response.ok) {
+			if (response.status === 200) {
 				router.push('/auth/signin?message=Account created successfully! Please sign in.');
-			} else {
-				setError(data.error || 'An error occurred');
 			}
-		} catch (err) {
-			setError('An error occurred. Please try again.');
+		} catch (error) {
+			const axiosError = error as AxiosError<{ error: string }>;
+			setError(axiosError.response?.data?.error || 'An error occurred');
 		} finally {
 			setIsLoading(false);
 		}
@@ -67,7 +63,7 @@ export default function SignUpPage() {
 				className="bg-gradient-to-br from-amber-900/80 to-amber-800/60 backdrop-blur-md
                  rounded-xl border border-amber-600/50 p-6 sm:p-8 w-full max-w-md shadow-2xl my-auto"
 			>
-				<div className="text-center mb-8 ">
+				<div className="text-center mb-8">
 					<motion.div
 						initial={{ scale: 0.5, opacity: 0 }}
 						animate={{ scale: 1, opacity: 1 }}
@@ -79,21 +75,6 @@ export default function SignUpPage() {
 						<Sparkles className="text-amber-400 ml-2" size={32} />
 					</motion.div>
 					<p className="text-amber-200 antique-text">Join the community of storytellers</p>
-
-					<motion.div
-						initial={{ opacity: 0, scale: 0.9 }}
-						animate={{ opacity: 1, scale: 1 }}
-						transition={{ delay: 0.4 }}
-						className="mt-4 p-3 bg-emerald-900/40 border border-emerald-600/40 rounded-lg"
-					>
-						<div className="flex items-center justify-center mb-2">
-							<Gift className="text-emerald-400 mr-2" size={20} />
-							<span className="text-emerald-300 decorative-text font-semibold">Welcome Bonus</span>
-						</div>
-						<p className="text-emerald-200 text-sm antique-text">
-							Start with 10 free credits to create your first stories!
-						</p>
-					</motion.div>
 				</div>
 
 				<form onSubmit={handleSubmit} className="space-y-6">

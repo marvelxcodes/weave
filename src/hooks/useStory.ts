@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
+import axios, { AxiosError } from 'axios';
 import { StoryState, StorySegment, StoryChoice, GenerateStoryRequest } from '@/types/story';
 
 const initialState: StoryState = {
@@ -82,44 +83,33 @@ export const useStory = () => {
     setState(prev => ({ ...prev, isGenerating: true, error: null }));
 
     try {
-      const response = await fetch(`/api/stories/${currentStoryId}/chapters`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ choice }),
+      const response = await axios.post(`/api/stories/${currentStoryId}/chapters`, {
+        choice
       });
 
-      const data = await response.json();
+      const data = response.data;
 
-      if (response.ok) {
-        const newSegment: StorySegment = {
-          id: data.id,
-          text: data.content,
-          choices: data.choices || [],
-          isGenerated: true,
-          timestamp: Date.now(),
-        };
+      const newSegment: StorySegment = {
+        id: data.id,
+        text: data.content,
+        choices: data.choices || [],
+        isGenerated: true,
+        timestamp: Date.now(),
+      };
 
-        setState(prev => ({
-          ...prev,
-          currentSegment: newSegment,
-          history: prev.currentSegment ? [...prev.history, prev.currentSegment] : prev.history,
-          isGenerating: false,
-        }));
-      } else {
-        setState(prev => ({
-          ...prev,
-          isGenerating: false,
-          error: data.error || 'Failed to generate chapter'
-        }));
-      }
+      setState(prev => ({
+        ...prev,
+        currentSegment: newSegment,
+        history: prev.currentSegment ? [...prev.history, prev.currentSegment] : prev.history,
+        isGenerating: false,
+      }));
     } catch (error) {
       console.error('Chapter generation error:', error);
+      const axiosError = error as AxiosError<{ error: string }>;
       setState(prev => ({
         ...prev,
         isGenerating: false,
-        error: 'Failed to generate chapter. Please try again.',
+        error: axiosError.response?.data?.error || 'Failed to generate chapter. Please try again.',
       }));
     }
   }, [state.currentSegment, currentStoryId]);
@@ -136,50 +126,37 @@ export const useStory = () => {
     setState(prev => ({ ...prev, isGenerating: true, error: null }));
 
     try {
-      const response = await fetch('/api/stories', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title: `Story: ${initialPrompt.substring(0, 50)}...`,
-          description: initialPrompt,
-          isPublic: false,
-          initialPrompt
-        }),
+      const response = await axios.post('/api/stories', {
+        title: `Story: ${initialPrompt.substring(0, 50)}...`,
+        description: initialPrompt,
+        isPublic: false,
+        initialPrompt
       });
 
-      const data = await response.json();
+      const data = response.data;
 
-      if (response.ok) {
-        setCurrentStoryId(data.story.id);
-        const newSegment: StorySegment = {
-          id: data.chapter.id,
-          text: data.chapter.content,
-          choices: data.chapter.choices || [],
-          isGenerated: true,
-          timestamp: Date.now(),
-        };
+      setCurrentStoryId(data.story.id);
+      const newSegment: StorySegment = {
+        id: data.chapter.id,
+        text: data.chapter.content,
+        choices: data.chapter.choices || [],
+        isGenerated: true,
+        timestamp: Date.now(),
+      };
 
-        setState(prev => ({
-          ...prev,
-          currentSegment: newSegment,
-          history: [],
-          isGenerating: false,
-        }));
-      } else {
-        setState(prev => ({
-          ...prev,
-          isGenerating: false,
-          error: data.error || 'Failed to create story'
-        }));
-      }
+      setState(prev => ({
+        ...prev,
+        currentSegment: newSegment,
+        history: [],
+        isGenerating: false,
+      }));
     } catch (error) {
       console.error('Story creation error:', error);
+      const axiosError = error as AxiosError<{ error: string }>;
       setState(prev => ({
         ...prev,
         isGenerating: false,
-        error: 'Failed to create story. Please try again.',
+        error: axiosError.response?.data?.error || 'Failed to create story. Please try again.',
       }));
     }
   }, [session]);

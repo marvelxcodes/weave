@@ -14,6 +14,7 @@ import {
   Sparkles,
   ArrowLeft
 } from 'lucide-react';
+import axios, { AxiosError } from 'axios';
 
 interface Story {
   id: string;
@@ -47,39 +48,45 @@ export default function StoriesPage() {
   const { data: session } = useSession();
   const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [pagination, setPagination] = useState<StoriesResponse['pagination'] | null>(null);
+  const [totalPages, setTotalPages] = useState(1);
 
-  useEffect(() => {
-    fetchStories();
-  }, [currentPage, searchTerm]);
-
-  const fetchStories = async () => {
-    setLoading(true);
+  const fetchStories = async (page = 1, search = '') => {
     try {
+      setLoading(true);
       const params = new URLSearchParams({
-        page: currentPage.toString(),
+        page: page.toString(),
         limit: '12',
-        ...(searchTerm && { search: searchTerm })
+        ...(search && { search })
       });
 
-      const response = await fetch(`/api/stories?${params}`);
-      const data: StoriesResponse = await response.json();
+      const response = await axios.get<StoriesResponse>(`/api/stories?${params}`);
       
-      setStories(data.stories);
-      setPagination(data.pagination);
+      setStories(response.data.stories);
+      setTotalPages(response.data.pagination.pages);
+      setCurrentPage(page);
     } catch (error) {
-      console.error('Error fetching stories:', error);
+      const axiosError = error as AxiosError<{ error: string }>;
+      setError(axiosError.response?.data?.error || 'Failed to load stories');
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    fetchStories();
+  }, []);
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setCurrentPage(1);
-    fetchStories();
+    fetchStories(1, searchTerm);
+  };
+
+  const handlePageChange = (page: number) => {
+    fetchStories(page, searchTerm);
   };
 
   return (
@@ -90,7 +97,7 @@ export default function StoriesPage() {
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Link 
+              <Link
                 href="/"
                 className="flex items-center space-x-2 text-amber-200 hover:text-amber-100 
                          transition-colors"
@@ -147,6 +154,22 @@ export default function StoriesPage() {
                 Loading stories...
               </span>
             </div>
+          </div>
+        ) : error ? (
+          <div className="text-center py-12">
+            <div className="text-red-400 text-lg font-semibold decorative-text mb-2">
+              Error loading stories
+            </div>
+            <p className="text-red-400/80 antique-text mb-4">
+              {error}
+            </p>
+            <button
+              onClick={() => fetchStories(currentPage, searchTerm)}
+              className="px-6 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg
+                       border-2 border-amber-500 transition-all duration-300 decorative-text"
+            >
+              Try Again
+            </button>
           </div>
         ) : stories?.length === 0 ? (
           <div className="text-center py-12">
@@ -240,7 +263,7 @@ export default function StoriesPage() {
             </motion.div>
 
             {/* Pagination */}
-            {pagination && pagination.pages > 1 && (
+            {totalPages > 1 && (
               <motion.div 
                 className="flex justify-center mt-12"
                 initial={{ opacity: 0 }}
@@ -248,10 +271,10 @@ export default function StoriesPage() {
                 transition={{ delay: 0.6 }}
               >
                 <div className="flex items-center space-x-2">
-                  {Array.from({ length: pagination.pages }, (_, i) => i + 1).map((page) => (
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                     <button
                       key={page}
-                      onClick={() => setCurrentPage(page)}
+                      onClick={() => handlePageChange(page)}
                       className={`
                         px-4 py-2 rounded-lg border-2 transition-all duration-300
                         decorative-text font-semibold

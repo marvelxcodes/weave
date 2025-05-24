@@ -104,27 +104,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check user credits
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { credits: true }
-    });
-
-    if (!user || user.credits < 1) {
-      return NextResponse.json(
-        { error: 'Insufficient credits' },
-        { status: 400 }
-      );
-    }
-
     // Create story and first chapter in a transaction
     const result = await prisma.$transaction(async (tx) => {
-      // Deduct credit
-      await tx.user.update({
-        where: { id: userId },
-        data: { credits: { decrement: 1 } }
-      });
-
       // Create story
       const story = await tx.story.create({
         data: {
@@ -132,17 +113,6 @@ export async function POST(request: NextRequest) {
           description,
           isPublic: isPublic || false,
           authorId: userId
-        }
-      });
-
-      // Create credit history
-      await tx.creditHistory.create({
-        data: {
-          userId: userId,
-          amount: -1,
-          type: 'SPENT',
-          description: 'Story generation',
-          storyId: story.id
         }
       });
 

@@ -28,23 +28,12 @@ export async function POST(request: NextRequest) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Create user with starting credits
+    // Create user
     const user = await prisma.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
-        credits: 10, // Starting credits
-      }
-    });
-
-    // Create credit history entry
-    await prisma.creditHistory.create({
-      data: {
-        userId: user.id,
-        amount: 10,
-        type: 'BONUS',
-        description: 'Welcome bonus - starting credits'
       }
     });
 
@@ -54,7 +43,6 @@ export async function POST(request: NextRequest) {
         id: user.id,
         name: user.name,
         email: user.email,
-        credits: user.credits
       }
     });
   } catch (error) {
