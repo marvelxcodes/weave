@@ -55,6 +55,11 @@ export const StoryGame: React.FC = () => {
 		setShowHistory(!showHistory);
 	};
 
+	const handlePromptClose = () => {
+		setShowPrompt(false);
+		setBookOpen(false);
+	};
+
 	const showChoices = currentSegment && !isGenerating && currentSegment.choices.length > 0;
 
 	return (
@@ -64,8 +69,8 @@ export const StoryGame: React.FC = () => {
 				<Link
 					href="/stories"
 					className="px-4 py-2 bg-amber-900/80 backdrop-blur-sm border border-amber-600/50
-                   rounded-lg text-amber-200 hover:text-amber-100 hover:border-amber-500/60
-                   transition-all duration-300 antique-text"
+                    rounded-lg text-amber-200 hover:text-amber-100 hover:border-amber-500/60
+                    transition-all duration-300 antique-text"
 				>
 					Browse Stories
 				</Link>
@@ -124,7 +129,12 @@ export const StoryGame: React.FC = () => {
 				hasHistory={history.length > 0}
 			/>
 
-			<StoryPrompt onSubmit={handlePromptSubmit} isVisible={showPrompt} isGenerating={isGenerating} />
+			<StoryPrompt
+				onSubmit={handlePromptSubmit}
+				onClose={handlePromptClose}
+				isVisible={showPrompt}
+				isGenerating={isGenerating}
+			/>
 
 			{/* Error Display */}
 			{error && (
