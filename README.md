@@ -1,36 +1,222 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# WEAVE - Interactive 3D Storytelling Platform
 
-## Getting Started
+A beautiful interactive 3D storytelling website where users can create immersive story experiences with choices that shape the narrative. Built with Next.js, React Three Fiber, Prisma, and NextAuth.
 
-First, run the development server:
+## Features
 
+### 🎨 **Beautiful 3D Interface**
+- Immersive antique library environment with React Three Fiber
+- Interactive floating magical book with particle effects
+- Smooth animations and atmospheric lighting
+
+### 📚 **Story Creation System**
+- AI-powered story generation (currently with mock data)
+- Chapter-by-chapter progression based on user choices
+- Credit-based system for story generation
+- Story history tracking and navigation
+
+### 🔐 **User Authentication**
+- NextAuth.js integration with credentials and OAuth support
+- User registration with email/password
+- Session management and protected routes
+
+### 💰 **Credit System**
+- Starting credits for new users (10 free credits)
+- 1 credit per chapter generation
+- Credit history tracking
+- Future: Credit purchase system
+
+### 🌐 **Story Library**
+- Browse public stories created by other users
+- Search and filter functionality
+- Like and view tracking
+- Free reading of all public stories
+
+### 🎯 **Technical Features**
+- PostgreSQL database with Prisma ORM
+- Server-side rendering with Next.js 15
+- TypeScript for type safety
+- Responsive design with Tailwind CSS
+- Beautiful animations with Framer Motion
+
+## Tech Stack
+
+- **Frontend**: Next.js 15, React 18, TypeScript
+- **3D Graphics**: React Three Fiber, React Three Drei
+- **Styling**: Tailwind CSS, Framer Motion
+- **Database**: PostgreSQL with Prisma ORM
+- **Authentication**: NextAuth.js
+- **UI Components**: Custom components with antique theme
+- **Fonts**: Cinzel & Cinzel Decorative (Google Fonts)
+
+## Installation & Setup
+
+### Prerequisites
+- Node.js 18+ and pnpm
+- PostgreSQL database
+- Git
+
+### 1. Clone the Repository
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <repository-url>
+cd weave
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Install Dependencies
+```bash
+pnpm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Environment Variables
+Create a `.env` file in the root directory:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```env
+# Database
+DATABASE_URL="postgresql://username:password@localhost:5432/weave_db"
 
-## Learn More
+# NextAuth
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="your-secret-key-here"
 
-To learn more about Next.js, take a look at the following resources:
+# OAuth Providers (Optional)
+GOOGLE_CLIENT_ID="your-google-client-id"
+GOOGLE_CLIENT_SECRET="your-google-client-secret"
+GITHUB_CLIENT_ID="your-github-client-id"
+GITHUB_CLIENT_SECRET="your-github-client-secret"
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 4. Database Setup
+```bash
+# Generate Prisma client
+npx prisma generate
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Run database migrations
+npx prisma db push
 
-## Deploy on Vercel
+# (Optional) Seed the database
+npx prisma db seed
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 5. Start Development Server
+```bash
+pnpm dev
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Visit `http://localhost:3000` to see the application.
+
+## Database Schema
+
+The application uses the following main models:
+
+- **User**: User accounts with credits and authentication
+- **Story**: User-created stories with metadata
+- **Chapter**: Individual story chapters with choices
+- **CreditHistory**: Track credit transactions
+- **StoryLike**: User likes on stories
+
+## Usage
+
+### Creating Stories
+1. Sign up for an account (get 10 free credits)
+2. Click the magical book in the 3D scene
+3. Enter a story prompt
+4. Make choices to continue the narrative
+5. Each chapter generation costs 1 credit
+
+### Reading Stories
+1. Visit the "Browse Stories" page
+2. Search and filter public stories
+3. Click on any story to read for free
+4. Like stories to show appreciation
+
+### Credit System
+- New users start with 10 credits
+- Each chapter generation costs 1 credit
+- Reading stories is always free
+- Future: Credit purchase system
+
+## Project Structure
+
+```
+src/
+├── app/                  # Next.js app router
+│   ├── api/             # API routes
+│   ├── auth/            # Authentication pages
+│   └── stories/         # Story browsing pages
+├── components/          # React components
+│   ├── 3D/             # Three.js components
+│   ├── UI/             # Interface components
+│   └── providers/      # Context providers
+├── hooks/              # Custom React hooks
+├── lib/                # Utility libraries
+├── types/              # TypeScript definitions
+└── generated/          # Prisma generated files
+```
+
+## Development
+
+### Build for Production
+```bash
+pnpm build
+```
+
+### Database Management
+```bash
+# View database in Prisma Studio
+npx prisma studio
+
+# Reset database
+npx prisma db push --force-reset
+
+# Generate new migration
+npx prisma migrate dev --name migration-name
+```
+
+### Code Quality
+```bash
+# Type checking
+pnpm type-check
+
+# Linting
+pnpm lint
+```
+
+## Future Enhancements
+
+### AI Integration
+- OpenAI API integration for story generation
+- GPT-4 powered narrative continuation
+- Customizable AI parameters
+
+### Enhanced Features
+- Story collaboration system
+- Advanced search and filtering
+- Story categories and tags
+- User profiles and followers
+- Story ratings and reviews
+
+### Technical Improvements
+- Real-time collaboration
+- Story export functionality
+- Mobile app version
+- Advanced 3D environments
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License.
+
+## Support
+
+For questions or support, please create an issue in the repository.
+
+---
+
+**WEAVE** - Where stories come alive in 3D ✨

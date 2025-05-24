@@ -3,19 +3,61 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #1a1611;
+  --foreground: #f4f1e8;
+  --antique-gold: #d4af37;
+  --antique-bronze: #cd7f32;
+  --parchment: #f4f1e8;
+  --dark-wood: #3c2415;
+  --leather: #8b4513;
+  --sepia: #704214;
+  --font-cinzel: 'Cinzel', serif;
+  --font-cinzel-decorative: 'Cinzel Decorative', serif;
 }
 
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: light) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #f4f1e8;
+    --foreground: #1a1611;
   }
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-cinzel);
+  overflow: hidden;
+}
+
+/* Custom scrollbar for antique feel */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--dark-wood);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--antique-bronze);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--antique-gold);
+}
+
+/* Antique text effects */
+.antique-text {
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  color: var(--parchment);
+}
+
+.gold-text {
+  color: var(--antique-gold);
+  text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+}
+
+.decorative-text {
+  font-family: var(--font-cinzel-decorative);
 }
