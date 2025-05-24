@@ -14,7 +14,7 @@ export const StoryDisplay: React.FC<StoryDisplayProps> = ({
 }) => {
   return (
     <div className="absolute top-8 left-8 right-8 z-10">
-      <div className="bg-black/40 backdrop-blur-sm rounded-lg border border-amber-600/30 p-6 max-w-4xl mx-auto">
+      <div className="bg-black/40 backdrop-blur-sm rounded-lg border border-amber-600/30 p-6 max-w-4xl mx-auto my-10">
         <AnimatePresence mode="wait">
           {isGenerating ? (
             <motion.div
@@ -81,4 +81,4 @@ export const StoryDisplay: React.FC<StoryDisplayProps> = ({
       </div>
     </div>
   );
-}; 
+};
