@@ -73,17 +73,40 @@ export default function StoryGenerator() {
     }
   };
 
-  const continueStory = async (choice: string) => {
-    if (!generatedStory || !session?.user) return;
+  const continueStory = async (choice: string, choiceIndex: number) => {
+    if (!generatedStory || !session?.user) {
+      console.error('StoryGenerator continueStory: Missing requirements', {
+        hasGeneratedStory: !!generatedStory,
+        hasSession: !!session?.user,
+        storyId: generatedStory?.story_id
+      });
+      return;
+    }
+
+    console.log('StoryGenerator continueStory called:', {
+      choice,
+      choiceIndex,
+      storyId: generatedStory.story_id,
+      storyIdType: typeof generatedStory.story_id
+    });
 
     setIsLoading(true);
     setError('');
 
     try {
+      // Map choice index to A/B format
+      const choiceLabel = choiceIndex === 0 ? "A" : "B";
+      
+      console.log('StoryGenerator about to call storyApiService.continueStory with:', {
+        user_id: '',
+        story_id: generatedStory.story_id,
+        choice: choiceLabel
+      });
+      
       const response = await storyApiService.continueStory({
         user_id: '', // Not needed since we use session in the API route
         story_id: generatedStory.story_id,
-        choice, // Now using string choice directly
+        choice: choiceLabel, // Send "A" or "B" instead of full text
       });
 
       if (response.success && response.data) {
@@ -103,6 +126,7 @@ export default function StoryGenerator() {
         setError(response.error || 'Failed to continue story');
       }
     } catch (error) {
+      console.error('StoryGenerator continueStory error:', error);
       setError('An unexpected error occurred');
     } finally {
       setIsLoading(false);
@@ -289,14 +313,17 @@ export default function StoryGenerator() {
               {currentChapter.choices.map((choice: string, index: number) => (
                 <button
                   key={index}
-                  onClick={() => continueStory(choice)}
+                  onClick={() => continueStory(choice, index)}
                   disabled={isLoading}
                   className="w-full text-left p-4 rounded-lg border-2 border-cyan-500/40
                            glass-surface text-cyan-200 hover:border-cyan-400
                            hover:bg-cyan-400/10 transition-all duration-300 cyber-text
-                           disabled:opacity-50 disabled:cursor-not-allowed"
+                           disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
                 >
-                  {choice}
+                  <span className="bg-cyan-600/30 text-cyan-300 px-2 py-1 rounded text-xs mr-3 font-mono">
+                    {index === 0 ? 'A' : 'B'}
+                  </span>
+                  <span>{choice}</span>
                 </button>
               ))}
             </div>

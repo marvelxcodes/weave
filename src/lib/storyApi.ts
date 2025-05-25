@@ -28,7 +28,23 @@ export const generateStory = async (data: StoryGenerateRequest): Promise<StoryGe
 
 // Continue an existing story
 export const continueStory = async (data: StoryContinueRequest): Promise<StoryContinueResponse> => {
+  console.log('storyApi continueStory called with:', data);
+  console.log('storyApi continueStory data validation:', {
+    hasUserId: !!data.user_id,
+    hasStoryId: !!data.story_id,
+    storyIdType: typeof data.story_id,
+    storyIdValue: data.story_id,
+    hasChoice: !!data.choice,
+    choiceValue: data.choice
+  });
+  
+  if (!data.story_id) {
+    console.error('storyApi continueStory: story_id is missing or null/undefined');
+    throw new Error('Story ID is required');
+  }
+  
   const response = await api.post<StoryContinueResponse>('/story/continue', data);
+  console.log('storyApi continueStory response:', response.data);
   return response.data;
 };
 
@@ -89,10 +105,11 @@ export const storyApiService = {
     try {
       const result = await registerUser(data);
       return { success: true, data: result };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const axiosError = error as { response?: { data?: { error?: string } }; message?: string };
       return {
         success: false,
-        error: error.response?.data?.error || error.message || 'Registration failed'
+        error: axiosError.response?.data?.error || axiosError.message || 'Registration failed'
       };
     }
   },
@@ -101,10 +118,11 @@ export const storyApiService = {
     try {
       const result = await generateStory(data);
       return { success: true, data: result };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const axiosError = error as { response?: { data?: { error?: string } }; message?: string };
       return {
         success: false,
-        error: error.response?.data?.error || error.message || 'Story generation failed'
+        error: axiosError.response?.data?.error || axiosError.message || 'Story generation failed'
       };
     }
   },
@@ -113,10 +131,11 @@ export const storyApiService = {
     try {
       const result = await continueStory(data);
       return { success: true, data: result };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const axiosError = error as { response?: { data?: { error?: string } }; message?: string };
       return {
         success: false,
-        error: error.response?.data?.error || error.message || 'Story continuation failed'
+        error: axiosError.response?.data?.error || axiosError.message || 'Story continuation failed'
       };
     }
   },
@@ -125,10 +144,11 @@ export const storyApiService = {
     try {
       const result = await getUserStories(userId);
       return { success: true, data: result };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const axiosError = error as { response?: { data?: { error?: string } }; message?: string };
       return {
         success: false,
-        error: error.response?.data?.error || error.message || 'Failed to fetch stories'
+        error: axiosError.response?.data?.error || axiosError.message || 'Failed to fetch stories'
       };
     }
   },
@@ -141,10 +161,11 @@ export const storyApiService = {
     try {
       const result = await getStoryDetails(storyId, userId, chapterNum);
       return { success: true, data: result };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const axiosError = error as { response?: { data?: { error?: string } }; message?: string };
       return {
         success: false,
-        error: error.response?.data?.error || error.message || 'Failed to fetch story details'
+        error: axiosError.response?.data?.error || axiosError.message || 'Failed to fetch story details'
       };
     }
   },
@@ -153,10 +174,11 @@ export const storyApiService = {
     try {
       const result = await getPromptSuggestions(genre);
       return { success: true, data: result };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const axiosError = error as { response?: { data?: { error?: string } }; message?: string };
       return {
         success: false,
-        error: error.response?.data?.error || error.message || 'Failed to fetch suggestions'
+        error: axiosError.response?.data?.error || axiosError.message || 'Failed to fetch suggestions'
       };
     }
   },
@@ -165,10 +187,11 @@ export const storyApiService = {
     try {
       const result = await getGenres();
       return { success: true, data: result };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const axiosError = error as { response?: { data?: { error?: string } }; message?: string };
       return {
         success: false,
-        error: error.response?.data?.error || error.message || 'Failed to fetch genres'
+        error: axiosError.response?.data?.error || axiosError.message || 'Failed to fetch genres'
       };
     }
   },
@@ -177,10 +200,11 @@ export const storyApiService = {
     try {
       const result = await getAuthors(genreId);
       return { success: true, data: result };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const axiosError = error as { response?: { data?: { error?: string } }; message?: string };
       return {
         success: false,
-        error: error.response?.data?.error || error.message || 'Failed to fetch authors'
+        error: axiosError.response?.data?.error || axiosError.message || 'Failed to fetch authors'
       };
     }
   }

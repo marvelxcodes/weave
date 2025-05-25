@@ -34,15 +34,15 @@ export const externalApiService = {
   // Register user preferences with external API
   async registerUserPreferences(data: ExternalUserRegistration): Promise<{ success: boolean; error?: string }> {
     try {
-      const response = await externalApi.post('/register', {
-        data
-      });
+      console.log("data", data);
+      await externalApi.post('/register', data);
       return { success: true };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('External API registration error:', error);
+      const axiosError = error as { response?: { data?: { detail?: string } } };
       return { 
         success: false, 
-        error: error.response?.data?.detail || 'Failed to sync user preferences' 
+        error: axiosError.response?.data?.detail || 'Failed to sync user preferences' 
       };
     }
   },
@@ -52,11 +52,12 @@ export const externalApiService = {
     try {
       const response = await externalApi.post('/story/generate', data);
       return { success: true, data: response.data };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('External API story generation error:', error);
+      const axiosError = error as { response?: { data?: { detail?: string } } };
       return { 
         success: false, 
-        error: error.response?.data?.detail || 'Failed to generate story' 
+        error: axiosError.response?.data?.detail || 'Failed to generate story' 
       };
     }
   },
@@ -64,13 +65,17 @@ export const externalApiService = {
   // Continue story using external API
   async continueStory(data: ExternalStoryContinuation) {
     try {
+      console.log('External API continue story request:', data);
       const response = await externalApi.post('/story/continue', data);
+      console.log('External API continue story response:', response.data);
       return { success: true, data: response.data };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('External API story continuation error:', error);
+      const axiosError = error as { response?: { data?: { detail?: string } } };
+      console.error('Error details:', axiosError.response?.data);
       return { 
         success: false, 
-        error: error.response?.data?.detail || 'Failed to continue story' 
+        error: axiosError.response?.data?.detail || 'Failed to continue story' 
       };
     }
   },
@@ -81,11 +86,12 @@ export const externalApiService = {
       const params = genre ? `?genre=${genre}` : '';
       const response = await externalApi.get(`/suggestions${params}`);
       return { success: true, data: response.data };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('External API suggestions error:', error);
+      const axiosError = error as { response?: { data?: { detail?: string } } };
       return { 
         success: false, 
-        error: error.response?.data?.detail || 'Failed to get suggestions' 
+        error: axiosError.response?.data?.detail || 'Failed to get suggestions' 
       };
     }
   },
@@ -95,11 +101,12 @@ export const externalApiService = {
     try {
       const response = await externalApi.get('/genres');
       return { success: true, data: response.data };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('External API genres error:', error);
+      const axiosError = error as { response?: { data?: { detail?: string } } };
       return { 
         success: false, 
-        error: error.response?.data?.detail || 'Failed to get genres' 
+        error: axiosError.response?.data?.detail || 'Failed to get genres' 
       };
     }
   },
@@ -109,12 +116,14 @@ export const externalApiService = {
     try {
       const params = genreId ? `?genre_id=${genreId}` : '';
       const response = await externalApi.get(`/authors${params}`);
+      console.log('External API authors response:', response.data);
       return { success: true, data: response.data };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('External API authors error:', error);
+      const axiosError = error as { response?: { data?: { detail?: string } } };
       return { 
         success: false, 
-        error: error.response?.data?.detail || 'Failed to get authors' 
+        error: axiosError.response?.data?.detail || 'Failed to get authors' 
       };
     }
   }

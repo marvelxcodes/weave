@@ -18,23 +18,32 @@ export default function SignInPage() {
     e.preventDefault();
     setIsLoading(true);
     setError('');
-
     try {
+      console.log('🔍 [SIGNIN] Calling NextAuth signIn...');
       const result = await signIn('credentials', {
         email,
         password,
         redirect: false,
       });
 
+
       if (result?.error) {
+        console.log('❌ [SIGNIN] Sign-in failed with error:', result.error);
         setError('Neural access denied - invalid credentials');
       } else {
+        console.log('🔍 [SIGNIN] Sign-in successful, getting session...');
         const session = await getSession();
+
         if (session) {
+          console.log('✅ [SIGNIN] Redirecting to home page...');
           router.push('/');
+        } else {
+          console.log('❌ [SIGNIN] No session found after successful sign-in');
+          setError('Session creation failed - please try again');
         }
       }
-    } catch {
+    } catch (error) {
+      console.error('❌ [SIGNIN] Sign-in error:', error);
       setError('System error occurred - retry connection');
     } finally {
       setIsLoading(false);

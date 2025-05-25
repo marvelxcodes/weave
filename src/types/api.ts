@@ -27,7 +27,7 @@ export interface ChapterResponse {
 }
 
 export interface StoryGenerateResponse {
-  story_id: number; // Changed to number
+  story_id: string; // Changed to string to match Prisma CUID
   title: string;
   genre: string;
   chapters: ChapterResponse[];
@@ -37,8 +37,8 @@ export interface StoryGenerateResponse {
 // Story continuation types
 export interface StoryContinueRequest {
   user_id: string;
-  story_id: number; // Changed to number
-  choice: string; // "A" or "B" or full choice text
+  story_id: string; // Changed to string to match Prisma CUID
+  choice: string; // "A" or "B" - represents the choice option
 }
 
 export interface StoryContinueResponse {
@@ -49,7 +49,7 @@ export interface StoryContinueResponse {
 
 // Get all stories types - now uses GET with query params
 export interface UserStoryResponse {
-  story_id: number;
+  story_id: string; // Changed to string to match Prisma CUID
   title: string;
   genre: string;
   current_chapter: number;
@@ -62,7 +62,7 @@ export interface GetStoriesResponse {
 
 // Get specific story types - now uses GET with query params
 export interface StoryDetailResponse {
-  story_id: number;
+  story_id: string; // Changed to string to match Prisma CUID
   title: string;
   genre: string;
   created_at: string;

@@ -43,10 +43,10 @@ export const StoryGame: React.FC = () => {
 		setBookOpen(true);
 	};
 
-	const handlePromptSubmit = async (prompt: string) => {
+	const handlePromptSubmit = async (prompt: string, genre?: string) => {
 		setShowPrompt(false);
 		setBookOpen(true);
-		await startNewStory(prompt);
+		await startNewStory(prompt, genre);
 	};
 
 	const handleChoiceSelect = async (choice: StoryChoice) => {

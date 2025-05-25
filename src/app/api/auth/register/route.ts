@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
 import { externalApiService } from '@/lib/externalApi';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
+  
   try {
     const { name, email, password, preferred_authors } = await request.json();
 
@@ -14,7 +15,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if user already exists
     const existingUser = await prisma.user.findUnique({
       where: { email }
     });
@@ -26,10 +26,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Create user in local database
     const user = await prisma.user.create({
       data: {
         name,
@@ -39,8 +37,8 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    // Sync user preferences with external API (non-blocking)
-    if (preferred_authors && preferred_authors.length > 0) {
+    console.log(user)
+
       try {
         await externalApiService.registerUserPreferences({
           user_id: user.id,
@@ -49,26 +47,49 @@ export async function POST(request: NextRequest) {
           preferred_authors: preferred_authors,
           profile_pic_url: ""
         });
-        console.log('User preferences synced with external API');
       } catch (error) {
         // Log error but don't fail the registration
-        console.error('Failed to sync with external API:', error);
+        console.error('⚠️ [REGISTER] Failed to sync with external API:', error);
       }
-    }
 
-    return NextResponse.json({
-      message: 'User created successfully',
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        preferred_authors: user.preferredAuthors,
+      return NextResponse.json({
+        message: 'User created successfully',
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          preferred_authors: user.preferredAuthors,
+        }
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        if (error.message.includes('connect')) {
+        console.error('❌ [REGISTER] Database connection error detected');
+        return NextResponse.json(
+          { error: 'Database connection failed. Please check your environment configuration.' },
+          { status: 500 }
+        );
       }
-    });
-  } catch (error) {
-    console.error('Registration error:', error);
+      if (error.message.includes('NEXTAUTH_SECRET')) {
+        console.error('❌ [REGISTER] NextAuth configuration error detected');
+        return NextResponse.json(
+          { error: 'Authentication configuration missing. Please check environment variables.' },
+          { status: 500 }
+        );
+      }
+      if (error.message.includes('Environment variable not found')) {
+        console.error('❌ [REGISTER] Environment variable missing');
+        return NextResponse.json(
+          { error: 'Environment configuration missing. Please check your .env file.' },
+          { status: 500 }
+        );
+      }
+    } else {
+      console.error('❌ [REGISTER] Non-Error object thrown:', JSON.stringify(error));
+    }
+    
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Internal server error. Please check server logs for details.' },
       { status: 500 }
     );
   }

@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { externalApiService } from '@/lib/externalApi';
 
 export async function POST(request: NextRequest) {
   try {
     // Get session to verify authentication
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -16,7 +17,15 @@ export async function POST(request: NextRequest) {
 
     const { story_id, choice } = await request.json();
 
+    console.log('Continue story request:', { story_id, choice, type_story_id: typeof story_id, type_choice: typeof choice });
+
     if (!story_id || choice === undefined) {
+      console.error('Missing required fields:', { 
+        story_id_missing: !story_id, 
+        choice_missing: choice === undefined,
+        story_id_value: story_id,
+        choice_value: choice 
+      });
       return NextResponse.json(
         { error: 'Missing required fields: story_id and choice' },
         { status: 400 }
@@ -59,12 +68,23 @@ export async function POST(request: NextRequest) {
     const lastChapter = story.chapters[0];
     const nextChapterOrder = lastChapter ? lastChapter.order + 1 : 1;
 
-    // Get the choice text (choice can be either index or string)
+    // Get the choice in A/B format for external API
     let selectedChoice: string;
+    let choiceForExternal: string;
+    
     if (typeof choice === 'number') {
       const choices = lastChapter?.choices as string[] || [];
       selectedChoice = choices[choice] || 'Continue';
+      choiceForExternal = choice === 0 ? 'A' : 'B';
+    } else if (choice === 'A' || choice === 'B') {
+      // Already in A/B format
+      choiceForExternal = choice;
+      selectedChoice = choice;
     } else {
+      // Full text choice - try to determine if it's first or second choice
+      const choices = lastChapter?.choices as string[] || [];
+      const choiceIndex = choices.indexOf(choice);
+      choiceForExternal = choiceIndex === 0 ? 'A' : 'B';
       selectedChoice = choice;
     }
 
@@ -76,7 +96,7 @@ export async function POST(request: NextRequest) {
       const externalResult = await externalApiService.continueStory({
         user_id: user.id,
         story_id: externalStoryId,
-        choice: selectedChoice
+        choice: choiceForExternal // Send "A" or "B" to external API
       });
 
       if (externalResult.success) {

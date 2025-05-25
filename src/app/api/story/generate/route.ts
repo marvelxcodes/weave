@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { externalApiService } from '@/lib/externalApi';
 
 export async function POST(request: NextRequest) {
   try {
     // Get session to verify authentication
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -87,7 +88,7 @@ export async function POST(request: NextRequest) {
     const story = await prisma.story.create({
       data: {
         title: externalStory.title || `${genre.charAt(0).toUpperCase() + genre.slice(1)} Adventure`,
-        description: custom_prompt || `A ${genre} story`,
+        description: `${custom_prompt || `A ${genre} story`} [external_id:${externalStory.story_id}]`,
         authorId: user.id,
         tags: [genre],
         isPublic: false,
