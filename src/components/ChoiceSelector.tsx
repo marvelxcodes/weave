@@ -96,8 +96,8 @@ export const ChoiceSelector: React.FC<ChoiceSelectorProps> = ({
                         style={{
                           left: `${15 + i * 20}%`,
                           top: `${20 + i * 15}%`,
-                          background: i % 3 === 0 ? 'var(--neon-cyan)' : i % 3 === 1 ? 'var(--neon-pink)' : 'var(--neon-purple)',
-                          boxShadow: `0 0 10px ${i % 3 === 0 ? 'var(--neon-cyan)' : i % 3 === 1 ? 'var(--neon-pink)' : 'var(--neon-purple)'}`,
+                          					background: i % 3 === 0 ? 'var(--neon-cyan)' : i % 3 === 1 ? 'var(--neon-white)' : 'var(--neon-silver)',
+					boxShadow: `0 0 10px ${i % 3 === 0 ? 'var(--neon-cyan)' : i % 3 === 1 ? 'var(--neon-white)' : 'var(--neon-silver)'}`,
                         }}
                         animate={{
                           y: [-2, -8, -2],
@@ -143,7 +143,7 @@ export const ChoiceSelector: React.FC<ChoiceSelectorProps> = ({
                   {/* Glitch effect on hover */}
                   <div className="absolute inset-0 opacity-0 group-hover:opacity-10 
                                 transition-opacity duration-300 pointer-events-none
-                                bg-neon-pink animate-glitch" 
+                                				bg-white animate-glitch" 
                                 style={{ animationDuration: '0.1s' }} />
                 </motion.button>
               ))}

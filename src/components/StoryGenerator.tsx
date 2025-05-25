@@ -1,16 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import { useSession } from 'next-auth/react';
 import { motion } from 'framer-motion';
 import { BookOpen, Sparkles, Loader2 } from 'lucide-react';
 import { storyApiService } from '@/lib/storyApi';
-import { Genre, POPULAR_AUTHORS } from '@/types/api';
+import { Genre } from '@/types/api';
 
-interface StoryGeneratorProps {
-  userId: string;
-}
-
-export default function StoryGenerator({ userId }: StoryGeneratorProps) {
+export default function StoryGenerator() {
+  const { data: session } = useSession();
   const [genre, setGenre] = useState<Genre>('fantasy');
   const [customPrompt, setCustomPrompt] = useState('');
   const [suggestions, setSuggestions] = useState<string[]>([]);
@@ -27,9 +25,13 @@ export default function StoryGenerator({ userId }: StoryGeneratorProps) {
   const loadSuggestions = async (selectedGenre: Genre) => {
     setIsLoadingSuggestions(true);
     try {
-      const response = await storyApiService.getPromptSuggestions({ genre: selectedGenre });
+      const response = await storyApiService.getPromptSuggestions(selectedGenre);
       if (response.success && response.data) {
-        setSuggestions(response.data.suggestions);
+        // Backend returns array of SuggestionResponse objects
+        const genreSuggestions = response.data.find(s => s.genre === selectedGenre);
+        if (genreSuggestions) {
+          setSuggestions(genreSuggestions.prompts);
+        }
       }
     } catch (error) {
       console.error('Failed to load suggestions:', error);
@@ -44,8 +46,8 @@ export default function StoryGenerator({ userId }: StoryGeneratorProps) {
   };
 
   const generateStory = async () => {
-    if (!userId) {
-      setError('User ID is required');
+    if (!session?.user) {
+      setError('Please sign in to generate stories');
       return;
     }
 
@@ -54,7 +56,7 @@ export default function StoryGenerator({ userId }: StoryGeneratorProps) {
 
     try {
       const response = await storyApiService.generateStory({
-        user_id: userId,
+        user_id: '', // Not needed since we use session in the API route
         genre,
         custom_prompt: customPrompt || undefined,
       });
@@ -71,21 +73,32 @@ export default function StoryGenerator({ userId }: StoryGeneratorProps) {
     }
   };
 
-  const continueStory = async (choice: number) => {
-    if (!generatedStory || !userId) return;
+  const continueStory = async (choice: string) => {
+    if (!generatedStory || !session?.user) return;
 
     setIsLoading(true);
     setError('');
 
     try {
       const response = await storyApiService.continueStory({
-        user_id: userId,
+        user_id: '', // Not needed since we use session in the API route
         story_id: generatedStory.story_id,
-        choice,
+        choice, // Now using string choice directly
       });
 
       if (response.success && response.data) {
-        setGeneratedStory(response.data);
+        // Update the story with the new chapter
+        const newChapter = {
+          chapter_num: response.data.chapter_num,
+          content: response.data.content,
+          choices: response.data.choices
+        };
+        
+        setGeneratedStory({
+          ...generatedStory,
+          chapters: [...generatedStory.chapters, newChapter],
+          current_chapter: response.data.chapter_num
+        });
       } else {
         setError(response.error || 'Failed to continue story');
       }
@@ -95,6 +108,38 @@ export default function StoryGenerator({ userId }: StoryGeneratorProps) {
       setIsLoading(false);
     }
   };
+
+  // Show sign-in prompt if not authenticated
+  if (!session?.user) {
+    return (
+      <div className="max-w-4xl mx-auto p-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="glass-surface neon-border rounded-xl p-8 text-center"
+        >
+          <BookOpen className="text-cyan-400 mx-auto mb-4 neon-glow" size={48} />
+          <h2 className="text-2xl font-bold neon-text mb-4">Neural Interface Required</h2>
+          <p className="text-cyan-300 cyber-text mb-6">
+            Connect to the matrix to access the story generation system.
+          </p>
+          <a
+            href="/auth/signin"
+            className="inline-block py-3 px-6 bg-gradient-to-r from-cyan-600 to-blue-600
+                     text-white rounded-lg border-2 border-cyan-500
+                     hover:shadow-[0_0_20px_rgba(0,255,255,0.4),0_0_40px_rgba(255,255,255,0.1)]
+                     transition-all duration-300 cyber-text font-semibold
+                     hover:from-cyan-500 hover:to-blue-500"
+          >
+            CONNECT TO MATRIX
+          </a>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // Get the current chapter to display
+  const currentChapter = generatedStory?.chapters?.[generatedStory.chapters.length - 1];
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
@@ -106,6 +151,9 @@ export default function StoryGenerator({ userId }: StoryGeneratorProps) {
         <div className="flex items-center mb-6">
           <BookOpen className="text-cyan-400 mr-3 neon-glow" size={28} />
           <h2 className="text-2xl font-bold neon-text">Story Generator</h2>
+          <div className="ml-auto text-cyan-300 cyber-text">
+            Connected: {session.user.name}
+          </div>
         </div>
 
         {/* Genre Selection */}
@@ -182,7 +230,7 @@ export default function StoryGenerator({ userId }: StoryGeneratorProps) {
           disabled={isLoading}
           className="w-full py-3 bg-gradient-to-r from-cyan-600 to-blue-600
                    text-white rounded-lg border-2 border-cyan-500
-                   hover:shadow-[0_0_30px_rgba(0,255,255,0.5)]
+                   hover:shadow-[0_0_20px_rgba(0,255,255,0.4),0_0_40px_rgba(255,255,255,0.1)]
                    disabled:opacity-50 disabled:cursor-not-allowed
                    transition-all duration-300 cyber-text font-semibold
                    hover:from-cyan-500 hover:to-blue-500 flex items-center justify-center"
@@ -207,7 +255,7 @@ export default function StoryGenerator({ userId }: StoryGeneratorProps) {
             animate={{ opacity: 1 }}
             className="mt-4 text-red-400 text-sm cyber-text text-center p-3 
                       glass-surface border border-red-500/50 rounded-lg
-                      shadow-[0_0_20px_rgba(255,0,0,0.3)]"
+                      shadow-[0_0_15px_rgba(255,0,0,0.2)]"
           >
             {error}
           </motion.div>
@@ -215,28 +263,33 @@ export default function StoryGenerator({ userId }: StoryGeneratorProps) {
       </motion.div>
 
       {/* Generated Story Display */}
-      {generatedStory && (
+      {generatedStory && currentChapter && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="glass-surface neon-border rounded-xl p-6"
         >
-          <h3 className="text-xl font-bold neon-text mb-4">
-            Chapter {generatedStory.chapter_x}
-          </h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xl font-bold neon-text">
+              {generatedStory.title}
+            </h3>
+            <span className="text-cyan-400 cyber-text">
+              Chapter {currentChapter.chapter_num}
+            </span>
+          </div>
           
           <div className="text-cyan-100 cyber-text mb-6 leading-relaxed">
-            {generatedStory.content}
+            {currentChapter.content}
           </div>
 
           {/* Choices */}
-          {(generatedStory.choices_in_title_for_story || generatedStory.choices_in_title) && (
+          {currentChapter.choices && currentChapter.choices.length > 0 && (
             <div className="space-y-3">
               <h4 className="text-cyan-300 cyber-text font-medium">Choose your path:</h4>
-              {(generatedStory.choices_in_title_for_story || generatedStory.choices_in_title).map((choice: string, index: number) => (
+              {currentChapter.choices.map((choice: string, index: number) => (
                 <button
                   key={index}
-                  onClick={() => continueStory(index)}
+                  onClick={() => continueStory(choice)}
                   disabled={isLoading}
                   className="w-full text-left p-4 rounded-lg border-2 border-cyan-500/40
                            glass-surface text-cyan-200 hover:border-cyan-400

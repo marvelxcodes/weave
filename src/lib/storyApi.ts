@@ -6,12 +6,11 @@ import {
   StoryGenerateResponse,
   StoryContinueRequest,
   StoryContinueResponse,
-  GetStoriesRequest,
   GetStoriesResponse,
-  GetStoryRequest,
-  GetStoryResponse,
-  SuggestionsRequest,
-  SuggestionsResponse,
+  StoryDetailResponse,
+  SuggestionResponse,
+  GenreResponse,
+  AuthorResponse,
   ApiResponse
 } from '@/types/api';
 
@@ -33,25 +32,55 @@ export const continueStory = async (data: StoryContinueRequest): Promise<StoryCo
   return response.data;
 };
 
-// Get all stories for a user
-export const getUserStories = async (data: GetStoriesRequest): Promise<GetStoriesResponse> => {
-  const response = await api.post<GetStoriesResponse>('/story', data);
+// Get all stories for a user - now uses local API
+export const getUserStories = async (userId: string): Promise<GetStoriesResponse> => {
+  const response = await api.get<GetStoriesResponse>(`/story?user_id=${userId}`);
   return response.data;
 };
 
-// Get specific story details
+// Get specific story details - now uses local API
 export const getStoryDetails = async (
-  storyId: string, 
-  data: GetStoryRequest
-): Promise<GetStoryResponse> => {
-  const response = await api.post<GetStoryResponse>(`/story/${storyId}`, data);
+  storyId: number, 
+  userId: string,
+  chapterNum?: number
+): Promise<StoryDetailResponse> => {
+  const params = new URLSearchParams({ user_id: userId });
+  if (chapterNum) {
+    params.append('chapter_num', chapterNum.toString());
+  }
+  const response = await api.get<StoryDetailResponse>(`/story/${storyId}?${params}`);
   return response.data;
 };
 
-// Get prompt suggestions for a genre
-export const getPromptSuggestions = async (data: SuggestionsRequest): Promise<SuggestionsResponse> => {
-  const response = await api.post<SuggestionsResponse>('/suggestions', data);
-  return response.data;
+// Get prompt suggestions - now uses local API
+export const getPromptSuggestions = async (genre?: string): Promise<SuggestionResponse[]> => {
+  const params = genre ? `?genre=${genre}` : '';
+  const response = await api.get<{ suggestions: any; source: string }>(`/suggestions${params}`);
+  
+  // Handle both old and new response formats
+  if (Array.isArray(response.data.suggestions)) {
+    // If it's an array of SuggestionResponse objects
+    if (response.data.suggestions.length > 0 && typeof response.data.suggestions[0] === 'object' && 'genre' in response.data.suggestions[0]) {
+      return response.data.suggestions;
+    }
+    // If it's an array of strings (local fallback)
+    return genre ? [{ genre, prompts: response.data.suggestions }] : [];
+  }
+  
+  return [];
+};
+
+// Get all genres - now uses local API
+export const getGenres = async (): Promise<GenreResponse[]> => {
+  const response = await api.get<{ genres: GenreResponse[]; source: string }>('/genres');
+  return response.data.genres;
+};
+
+// Get all authors - now uses local API
+export const getAuthors = async (genreId?: number): Promise<AuthorResponse[]> => {
+  const params = genreId ? `?genre_id=${genreId}` : '';
+  const response = await api.get<{ authors: AuthorResponse[]; source: string }>(`/authors${params}`);
+  return response.data.authors;
 };
 
 // Wrapper functions with error handling
@@ -92,9 +121,9 @@ export const storyApiService = {
     }
   },
 
-  async getUserStories(data: GetStoriesRequest): Promise<ApiResponse<GetStoriesResponse>> {
+  async getUserStories(userId: string): Promise<ApiResponse<GetStoriesResponse>> {
     try {
-      const result = await getUserStories(data);
+      const result = await getUserStories(userId);
       return { success: true, data: result };
     } catch (error: any) {
       return {
@@ -105,11 +134,12 @@ export const storyApiService = {
   },
 
   async getStoryDetails(
-    storyId: string, 
-    data: GetStoryRequest
-  ): Promise<ApiResponse<GetStoryResponse>> {
+    storyId: number, 
+    userId: string,
+    chapterNum?: number
+  ): Promise<ApiResponse<StoryDetailResponse>> {
     try {
-      const result = await getStoryDetails(storyId, data);
+      const result = await getStoryDetails(storyId, userId, chapterNum);
       return { success: true, data: result };
     } catch (error: any) {
       return {
@@ -119,14 +149,38 @@ export const storyApiService = {
     }
   },
 
-  async getPromptSuggestions(data: SuggestionsRequest): Promise<ApiResponse<SuggestionsResponse>> {
+  async getPromptSuggestions(genre?: string): Promise<ApiResponse<SuggestionResponse[]>> {
     try {
-      const result = await getPromptSuggestions(data);
+      const result = await getPromptSuggestions(genre);
       return { success: true, data: result };
     } catch (error: any) {
       return {
         success: false,
         error: error.response?.data?.error || error.message || 'Failed to fetch suggestions'
+      };
+    }
+  },
+
+  async getGenres(): Promise<ApiResponse<GenreResponse[]>> {
+    try {
+      const result = await getGenres();
+      return { success: true, data: result };
+    } catch (error: any) {
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || 'Failed to fetch genres'
+      };
+    }
+  },
+
+  async getAuthors(genreId?: number): Promise<ApiResponse<AuthorResponse[]>> {
+    try {
+      const result = await getAuthors(genreId);
+      return { success: true, data: result };
+    } catch (error: any) {
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || 'Failed to fetch authors'
       };
     }
   }

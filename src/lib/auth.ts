@@ -2,8 +2,7 @@ import bcrypt from 'bcryptjs';
 import { prisma } from './prisma';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import GoogleProvider from 'next-auth/providers/google';
-import GitHubProvider from 'next-auth/providers/github';
+import {  } from 'next-auth/middleware';
 
 export const authOptions = {
   adapter: PrismaAdapter(prisma) as any,
@@ -46,22 +45,6 @@ export const authOptions = {
         };
       }
     }),
-    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
-      ? [
-          GoogleProvider({
-            clientId: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-          }),
-        ]
-      : []),
-    ...(process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET
-      ? [
-          GitHubProvider({
-            clientId: process.env.GITHUB_CLIENT_ID,
-            clientSecret: process.env.GITHUB_CLIENT_SECRET,
-          }),
-        ]
-      : []),
   ],
   session: {
     strategy: 'jwt' as const,

@@ -21,51 +21,66 @@ export const CyberBackground: React.FC = () => {
 
       {/* Floating data fragments */}
       <div className="absolute inset-0">
-        {[...Array(12)].map((_, i) => (
-          <motion.div
-            key={`fragment-${i}`}
-            className="absolute text-neon-cyan/30 cyber-text text-xs font-orbitron"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              y: [-20, 20, -20],
-              opacity: [0.2, 0.6, 0.2],
-              scale: [0.8, 1.2, 0.8],
-            }}
-            transition={{
-              duration: 4 + Math.random() * 2,
-              repeat: Infinity,
-              delay: Math.random() * 2,
-            }}
-          >
-            {['0x', '1A', 'FF', 'C7', '3E', '9B', 'D4', '2F'][Math.floor(Math.random() * 8)]}
-          </motion.div>
-        ))}
+        {[...Array(12)].map((_, i) => {
+          // Use deterministic values based on index to avoid hydration mismatch
+          const leftPos = ((i * 37) % 100);
+          const topPos = ((i * 23 + 17) % 100);
+          const duration = 4 + ((i * 13) % 20) / 10;
+          const delay = ((i * 7) % 20) / 10;
+          const fragmentIndex = i % 8;
+          
+          return (
+            <motion.div
+              key={`fragment-${i}`}
+              className="absolute text-neon-cyan/30 cyber-text text-xs font-orbitron"
+              style={{
+                left: `${leftPos}%`,
+                top: `${topPos}%`,
+              }}
+              animate={{
+                y: [-20, 20, -20],
+                opacity: [0.2, 0.6, 0.2],
+                scale: [0.8, 1.2, 0.8],
+              }}
+              transition={{
+                duration: duration,
+                repeat: Infinity,
+                delay: delay,
+              }}
+            >
+              {['0x', '1A', 'FF', 'C7', '3E', '9B', 'D4', '2F'][fragmentIndex]}
+            </motion.div>
+          );
+        })}
       </div>
 
       {/* Matrix rain effect */}
       <div className="absolute inset-0">
-        {[...Array(8)].map((_, i) => (
-          <motion.div
-            key={`rain-${i}`}
-            className="absolute w-px bg-gradient-to-b from-transparent via-matrix-green/40 to-transparent"
-            style={{
-              left: `${10 + i * 12}%`,
-              height: '100vh',
-            }}
-            animate={{
-              y: ['-100vh', '100vh'],
-            }}
-            transition={{
-              duration: 3 + Math.random() * 2,
-              repeat: Infinity,
-              delay: Math.random() * 3,
-              ease: 'linear',
-            }}
-          />
-        ))}
+        {[...Array(8)].map((_, i) => {
+          // Use deterministic values based on index
+          const duration = 3 + ((i * 11) % 20) / 10;
+          const delay = ((i * 19) % 30) / 10;
+          
+          return (
+            <motion.div
+              key={`rain-${i}`}
+              className="absolute w-px bg-gradient-to-b from-transparent via-matrix-green/40 to-transparent"
+              style={{
+                left: `${10 + i * 12}%`,
+                height: '100vh',
+              }}
+              animate={{
+                y: ['-100vh', '100vh'],
+              }}
+              transition={{
+                duration: duration,
+                repeat: Infinity,
+                delay: delay,
+                ease: 'linear',
+              }}
+            />
+          );
+        })}
       </div>
 
       {/* Floating UI elements */}
@@ -89,7 +104,7 @@ export const CyberBackground: React.FC = () => {
       </motion.div>
 
       <motion.div
-        className="absolute bottom-32 right-16 glass-surface rounded-lg p-3 border border-neon-pink/30"
+        className="absolute bottom-32 right-16 glass-surface rounded-lg p-3 border border-white/30"
         animate={{
           y: [5, -5, 5],
           opacity: [0.6, 0.9, 0.6],
@@ -101,15 +116,15 @@ export const CyberBackground: React.FC = () => {
         }}
       >
         <div className="flex items-center space-x-2">
-          <div className="w-2 h-2 bg-neon-pink rounded-full animate-neon-pulse" />
-          <span className="cyber-text text-xs text-neon-pink/80 font-rajdhani">
+          <div className="w-2 h-2 bg-white rounded-full animate-neon-pulse" />
+          <span className="cyber-text text-xs text-white/80 font-rajdhani">
             DATA FLOW: ACTIVE
           </span>
         </div>
       </motion.div>
 
       <motion.div
-        className="absolute top-1/2 right-8 glass-surface rounded-lg p-3 border border-neon-purple/30"
+        className="absolute top-1/2 right-8 glass-surface rounded-lg p-3 border border-gray-300/30"
         animate={{
           y: [-3, 3, -3],
           opacity: [0.5, 0.8, 0.5],
@@ -121,8 +136,8 @@ export const CyberBackground: React.FC = () => {
         }}
       >
         <div className="flex items-center space-x-2">
-          <div className="w-2 h-2 bg-neon-purple rounded-full animate-neon-pulse" />
-          <span className="cyber-text text-xs text-neon-purple/80 font-rajdhani">
+          <div className="w-2 h-2 bg-gray-300 rounded-full animate-neon-pulse" />
+          <span className="cyber-text text-xs text-gray-300/80 font-rajdhani">
             QUANTUM STATE
           </span>
         </div>
@@ -166,47 +181,59 @@ export const CyberBackground: React.FC = () => {
 
       {/* Glitch overlay */}
       <motion.div
-        className="absolute inset-0 bg-neon-pink/5"
+        className="absolute inset-0 bg-white/5"
         animate={{
           opacity: [0, 0.1, 0],
         }}
         transition={{
           duration: 0.1,
           repeat: Infinity,
-          repeatDelay: 5 + Math.random() * 10,
+          repeatDelay: 8, // Fixed value instead of random
         }}
       />
 
       {/* Energy streams */}
       <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-neon-cyan/20 via-transparent to-neon-cyan/20 animate-data-stream" />
-      <div className="absolute top-0 right-1/3 w-px h-full bg-gradient-to-b from-neon-pink/20 via-transparent to-neon-pink/20 animate-data-stream" style={{ animationDelay: '2s' }} />
-      <div className="absolute top-0 left-2/3 w-px h-full bg-gradient-to-b from-neon-purple/20 via-transparent to-neon-purple/20 animate-data-stream" style={{ animationDelay: '4s' }} />
+      <div className="absolute top-0 right-1/3 w-px h-full bg-gradient-to-b from-white/20 via-transparent to-white/20 animate-data-stream" style={{ animationDelay: '2s' }} />
+      <div className="absolute top-0 left-2/3 w-px h-full bg-gradient-to-b from-gray-300/20 via-transparent to-gray-300/20 animate-data-stream" style={{ animationDelay: '4s' }} />
 
       {/* Floating particles */}
       <div className="absolute inset-0">
-        {[...Array(15)].map((_, i) => (
-          <motion.div
-            key={`particle-${i}`}
-            className="absolute w-1 h-1 rounded-full"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              background: ['var(--neon-cyan)', 'var(--neon-pink)', 'var(--neon-purple)', 'var(--matrix-green)'][i % 4],
-              boxShadow: `0 0 6px ${['var(--neon-cyan)', 'var(--neon-pink)', 'var(--neon-purple)', 'var(--matrix-green)'][i % 4]}`,
-            }}
-            animate={{
-              x: [0, Math.random() * 100 - 50],
-              y: [0, Math.random() * 100 - 50],
-              opacity: [0.3, 0.8, 0.3],
-              scale: [0.5, 1.5, 0.5],
-            }}
-            transition={{
-              duration: 6 + Math.random() * 4,
-              repeat: Infinity,
-              delay: Math.random() * 3,
-            }}
-          />
-        ))}
+        {[...Array(15)].map((_, i) => {
+          // Use deterministic values based on index
+          const leftPos = ((i * 41) % 100);
+          const topPos = ((i * 29 + 13) % 100);
+          const xMovement = ((i * 17) % 100) - 50;
+          const yMovement = ((i * 31) % 100) - 50;
+          const duration = 6 + ((i * 23) % 40) / 10;
+          const delay = ((i * 11) % 30) / 10;
+          const colors = ['var(--neon-cyan)', 'var(--neon-white)', 'var(--neon-silver)', 'var(--matrix-green)'];
+          const colorIndex = i % 4;
+          
+          return (
+            <motion.div
+              key={`particle-${i}`}
+              className="absolute w-1 h-1 rounded-full"
+              style={{
+                left: `${leftPos}%`,
+                top: `${topPos}%`,
+                background: colors[colorIndex],
+                boxShadow: `0 0 6px ${colors[colorIndex]}`,
+              }}
+              animate={{
+                x: [0, xMovement],
+                y: [0, yMovement],
+                opacity: [0.3, 0.8, 0.3],
+                scale: [0.5, 1.5, 0.5],
+              }}
+              transition={{
+                duration: duration,
+                repeat: Infinity,
+                delay: delay,
+              }}
+            />
+          );
+        })}
       </div>
 
       {/* HUD elements */}
@@ -226,7 +253,7 @@ export const CyberBackground: React.FC = () => {
               </span>
             </div>
             <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-neon-pink rounded-full animate-neon-pulse" />
+              <div className="w-2 h-2 bg-white rounded-full animate-neon-pulse" />
               <span className="cyber-text text-xs text-neon-cyan/80 font-rajdhani">
                 REALITY MATRIX
               </span>
