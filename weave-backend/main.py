@@ -39,7 +39,7 @@ DATABASE_CONFIG = {
     'port': int(os.getenv('DB_PORT', 3306))
 }
 
-GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', 'AIzaSyDkC3uecLUthMZ2VI-0oqBUFW4QLy_XtvI')
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 
 # Initialize components
 db_manager = DatabaseManager(**DATABASE_CONFIG)
