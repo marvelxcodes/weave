@@ -123,7 +123,6 @@ async def generate_story(story_data: StoryGeneration, db: DatabaseManager = Depe
             story_data.user_id, 
             story_id,
             1, 
-            1
         )
         
         if not progress_updated:
@@ -173,13 +172,21 @@ async def continue_story(continuation_data: StoryContinuation, db: DatabaseManag
         
         # Determine choice (convert A/B to 0/1 for database)
         choice_index = 0 if continuation_data.choice.upper().startswith('A') else 1
+
+        choice_updated = db.update_previous_choice(
+            continuation_data.user_id,
+            continuation_data.story_id,
+            current_chapter,
+            choice_index
+        )
+        if not choice_updated:
+            raise HTTPException(status_code=500, detail="Failed to update previous choice")
         
         # Update progress with the choice made
         progress_updated = db.update_story_progress(
             continuation_data.user_id, 
             continuation_data.story_id, 
             current_chapter+1, 
-            choice_index
         )
         
         if not progress_updated:
@@ -328,32 +335,18 @@ async def get_authors(genre_id: Optional[int] = None, db: DatabaseManager = Depe
         if genre_id:
             # Get authors for specific genre from database
             db_authors = db.get_authors_by_genre(genre_id)
-            if db_authors:
-                return [
-                    AuthorResponse(author_id=a['author_id'], author_name=a['author_name'], genre_id=a['genre_id'])
-                    for a in db_authors
-                ]
+            return [
+                AuthorResponse(author_id=a['author_id'], author_name=a['author_name'], genre_id=a['genre_id'])
+                for a in db_authors
+            ]
         else:
             # Get all authors from database
             db_authors = db.get_all_authors()
-            if db_authors:
-                return [
-                    AuthorResponse(author_id=a['author_id'], author_name=a['author_name'], genre_id=a.get('genre_id'))
-                    for a in db_authors
-                ]
-        
-        # Fallback to hardcoded authors if database is empty
-        hardcoded_authors = []
-        author_id = 1
-        for genre, authors in genre_authors.AUTHORS_BY_GENRE.items():
-            for author in authors:
-                hardcoded_authors.append(
-                    AuthorResponse(author_id=author_id, author_name=author, genre_id=None)
-                )
-                author_id += 1
-        
-        return hardcoded_authors
-    
+            return [
+                AuthorResponse(author_id=a['author_id'], author_name=a['author_name'], genre_id=a.get('genre_id'))
+                for a in db_authors
+            ]
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to retrieve authors: {str(e)}")
 
