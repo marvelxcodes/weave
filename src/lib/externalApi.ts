@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const externalApi = axios.create({
-  baseURL: process.env.EXTERNAL_API_URL || 'http://ec2-54-252-168-199.ap-southeast-2.compute.amazonaws.com',
+  baseURL: process.env.EXTERNAL_API_URL || 'https://ec2-54-252-168-199.ap-southeast-2.compute.amazonaws.com',
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
@@ -89,7 +89,7 @@ export const externalApiService = {
     } catch (error: unknown) {
       console.error('External API suggestions error:', error);
       const axiosError = error as { response?: { data?: { detail?: string } } };
-      return { 
+      return {
         success: false, 
         error: axiosError.response?.data?.detail || 'Failed to get suggestions' 
       };
