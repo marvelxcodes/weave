@@ -75,17 +75,24 @@ export const StoryGame: React.FC = () => {
 
 			{/* Animated background particles */}
 			<div className="absolute inset-0 pointer-events-none z-1">
-				{[...Array(20)].map((_, i) => (
-					<div
-						key={i}
-						className="absolute w-1 h-1 bg-neon-cyan rounded-full opacity-30 animate-matrix-rain"
-						style={{
-							left: `${Math.random() * 100}%`,
-							animationDelay: `${Math.random() * 3}s`,
-							animationDuration: `${3 + Math.random() * 2}s`,
-						}}
-					/>
-				))}
+				{[...Array(20)].map((_, i) => {
+					// Use deterministic values based on index to avoid hydration mismatch
+					const leftPos = ((i * 43) % 100);
+					const animationDelay = ((i * 17) % 30) / 10;
+					const animationDuration = 3 + ((i * 13) % 20) / 10;
+					
+					return (
+						<div
+							key={i}
+							className="absolute w-1 h-1 bg-neon-cyan rounded-full opacity-30 animate-matrix-rain"
+							style={{
+								left: `${leftPos}%`,
+								animationDelay: `${animationDelay}s`,
+								animationDuration: `${animationDuration}s`,
+							}}
+						/>
+					);
+				})}
 			</div>
 
 			{/* Circuit pattern overlay */}
@@ -125,10 +132,10 @@ export const StoryGame: React.FC = () => {
 						</Link>
 						<Link
 							href="/auth/signup"
-							className="px-4 py-2 bg-cyber-gradient glass-surface border-2 border-neon-pink/50 rounded-lg 
-                       text-neon-pink hover:text-pink-100 hover:border-neon-pink
+							className="px-4 py-2 bg-cyber-gradient glass-surface border-2 border-white/50 rounded-lg 
+                       text-white hover:text-gray-100 hover:border-white
                        transition-all duration-300 cyber-text font-medium
-                       hover:shadow-neon-pink hover:animate-cyber-float"
+                       hover:shadow-[0_0_20px_rgba(255,255,255,0.5)] hover:animate-cyber-float"
 						>
 							INITIALIZE
 						</Link>
@@ -280,7 +287,7 @@ export const StoryGame: React.FC = () => {
 
 			{/* Data streams */}
 			<div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-neon-cyan to-transparent opacity-50 animate-data-stream" />
-			<div className="absolute bottom-0 right-0 w-full h-1 bg-gradient-to-l from-transparent via-neon-pink to-transparent opacity-50 animate-data-stream" style={{ animationDelay: '1s' }} />
+			<div className="absolute bottom-0 right-0 w-full h-1 bg-gradient-to-l from-transparent via-white to-transparent opacity-50 animate-data-stream" style={{ animationDelay: '1s' }} />
 		</div>
 	);
 };

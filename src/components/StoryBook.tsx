@@ -17,6 +17,7 @@ export const StoryBook: React.FC<StoryBookProps> = ({
   const bookRef = useRef<THREE.Group>(null);
   const leftPageRef = useRef<THREE.Mesh>(null);
   const rightPageRef = useRef<THREE.Mesh>(null);
+  const particlesRef = useRef<THREE.Group>(null);
   const [hovered, setHovered] = useState(false);
 
   useFrame((state) => {
@@ -43,6 +44,15 @@ export const StoryBook: React.FC<StoryBookProps> = ({
         -targetRotation,
         0.05
       );
+    }
+
+    // Animate floating particles
+    if (particlesRef.current && hovered) {
+      particlesRef.current.children.forEach((particle, i) => {
+        if (particle instanceof THREE.Mesh) {
+          particle.position.y = 0.2 + Math.sin(state.clock.elapsedTime + i) * 0.1;
+        }
+      });
     }
   });
 
@@ -120,13 +130,13 @@ export const StoryBook: React.FC<StoryBookProps> = ({
 
       {/* Floating particles around the book */}
       {hovered && (
-        <group>
+        <group ref={particlesRef}>
           {Array.from({ length: 8 }).map((_, i) => (
             <mesh
               key={i}
               position={[
                 Math.cos((i / 8) * Math.PI * 2) * 1.5,
-                0.2 + Math.sin(Date.now() * 0.001 + i) * 0.1,
+                0.2,
                 Math.sin((i / 8) * Math.PI * 2) * 1.5
               ]}
             >

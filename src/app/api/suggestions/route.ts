@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { externalApiService } from '@/lib/externalApi';
 
-// Hardcoded prompt suggestions for different genres
+// Hardcoded prompt suggestions for different genres (fallback)
 const GENRE_SUGGESTIONS: Record<string, string[]> = {
   fantasy: [
     'A young mage discovers an ancient spellbook that contains forbidden magic',
@@ -74,6 +75,64 @@ const GENRE_SUGGESTIONS: Record<string, string[]> = {
   ]
 };
 
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const genre = searchParams.get('genre');
+
+    // Try to get suggestions from external API first
+    const externalResult = await externalApiService.getSuggestions(genre || undefined);
+    
+    if (externalResult.success && externalResult.data) {
+      // Find suggestions for the requested genre
+      if (genre) {
+        const genreSuggestions = externalResult.data.find(
+          (item: any) => item.genre.toLowerCase() === genre.toLowerCase()
+        );
+        if (genreSuggestions) {
+          return NextResponse.json({
+            suggestions: genreSuggestions.prompts,
+            source: 'external'
+          });
+        }
+      } else {
+        // Return all suggestions if no genre specified
+        return NextResponse.json({
+          suggestions: externalResult.data,
+          source: 'external'
+        });
+      }
+    }
+
+    // Fallback to local suggestions
+    console.warn('Using local fallback for suggestions');
+    
+    if (genre) {
+      const suggestions = GENRE_SUGGESTIONS[genre.toLowerCase()] || GENRE_SUGGESTIONS['adventure'];
+      return NextResponse.json({
+        suggestions: suggestions,
+        source: 'local'
+      });
+    } else {
+      // Return all local suggestions
+      return NextResponse.json({
+        suggestions: Object.entries(GENRE_SUGGESTIONS).map(([genre, prompts]) => ({
+          genre,
+          prompts
+        })),
+        source: 'local'
+      });
+    }
+  } catch (error) {
+    console.error('Get suggestions error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+// Keep POST for backward compatibility
 export async function POST(request: NextRequest) {
   try {
     const { genre } = await request.json();
@@ -85,10 +144,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Try external API first
+    const externalResult = await externalApiService.getSuggestions(genre);
+    
+    if (externalResult.success && externalResult.data) {
+      const genreSuggestions = externalResult.data.find(
+        (item: any) => item.genre.toLowerCase() === genre.toLowerCase()
+      );
+      if (genreSuggestions) {
+        return NextResponse.json({
+          suggestions: genreSuggestions.prompts,
+          source: 'external'
+        });
+      }
+    }
+
+    // Fallback to local suggestions
     const suggestions = GENRE_SUGGESTIONS[genre.toLowerCase()] || GENRE_SUGGESTIONS['adventure'];
 
     return NextResponse.json({
       suggestions: suggestions,
+      source: 'local'
     });
   } catch (error) {
     console.error('Get suggestions error:', error);

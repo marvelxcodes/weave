@@ -13,6 +13,10 @@ export default {
         foreground: "var(--foreground)",
         'neon-cyan': '#00ffff',
         'neon-pink': '#ff0080',
+        'neon-white': '#ffffff',
+        'neon-silver': '#c0c0c0',
+        'professional-white': '#f8f9fa',
+        'soft-white': '#f1f3f4',
         'neon-purple': '#8000ff',
         'neon-blue': '#0080ff',
         'neon-green': '#00ff80',
@@ -113,13 +117,15 @@ export default {
       boxShadow: {
         'neon-cyan': '0 0 20px var(--neon-cyan)',
         'neon-pink': '0 0 20px var(--neon-pink)',
+        'neon-white': '0 0 20px var(--neon-white)',
+        'neon-silver': '0 0 20px var(--neon-silver)',
         'neon-purple': '0 0 20px var(--neon-purple)',
         'cyber-glow': '0 0 30px var(--neon-cyan), 0 0 60px var(--neon-cyan)',
         'glass': '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
       },
       backgroundImage: {
-        'cyber-gradient': 'linear-gradient(45deg, rgba(0, 255, 255, 0.1), rgba(255, 0, 128, 0.1), rgba(128, 0, 255, 0.1))',
-        'neon-gradient': 'linear-gradient(45deg, var(--neon-cyan), var(--neon-pink))',
+        'cyber-gradient': 'linear-gradient(45deg, rgba(0, 255, 255, 0.1), rgba(255, 255, 255, 0.1), rgba(192, 192, 192, 0.1))',
+        'neon-gradient': 'linear-gradient(45deg, var(--neon-cyan), var(--neon-white))',
         'matrix-gradient': 'linear-gradient(180deg, transparent, var(--matrix-green))',
       }
     },

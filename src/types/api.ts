@@ -1,20 +1,16 @@
 // User registration types
 export interface RegisterRequest {
   user_id: string;
-  preferred_authors: string[];
-  name: string;
   email: string;
+  name: string;
   password: string;
+  profile_pic_url?: string;
+  preferred_authors: number[]; // Changed to number[] to match backend
 }
 
 export interface RegisterResponse {
+  success: boolean;
   message: string;
-  user: {
-    id: string;
-    name: string;
-    email: string;
-    preferred_authors: string[];
-  };
 }
 
 // Story generation types
@@ -24,60 +20,72 @@ export interface StoryGenerateRequest {
   custom_prompt?: string;
 }
 
-export interface StoryGenerateResponse {
-  story_id: string;
-  chapter_x: number;
-  choices_in_title_for_story: string[];
+export interface ChapterResponse {
+  chapter_num: number;
   content: string;
+  choices: string[];
+}
+
+export interface StoryGenerateResponse {
+  story_id: number; // Changed to number
+  title: string;
+  genre: string;
+  chapters: ChapterResponse[];
+  current_chapter: number;
 }
 
 // Story continuation types
 export interface StoryContinueRequest {
   user_id: string;
-  story_id: string;
-  choice: number; // 0 or 1 based on the schema
+  story_id: number; // Changed to number
+  choice: string; // "A" or "B" or full choice text
 }
 
 export interface StoryContinueResponse {
-  story_id: string;
-  chapter_x: number;
-  choices_in_title: string[];
+  chapter_num: number;
   content: string;
+  choices: string[];
 }
 
-// Get all stories types
-export interface GetStoriesRequest {
-  user_id: string;
-}
-
-export interface StoryListItem {
-  story_id: string;
+// Get all stories types - now uses GET with query params
+export interface UserStoryResponse {
+  story_id: number;
   title: string;
-  chapter_numbers: number[];
+  genre: string;
+  current_chapter: number;
+  created_at: string; // ISO date string
 }
 
 export interface GetStoriesResponse {
-  stories: StoryListItem[];
+  stories: UserStoryResponse[];
 }
 
-// Get specific story types
-export interface GetStoryRequest {
-  user_id: string;
-  chapter_num: number;
-}
-
-export interface GetStoryResponse {
-  current_chapter_number: number;
-  story_itself: string;
-}
-
-// Suggestions types
-export interface SuggestionsRequest {
+// Get specific story types - now uses GET with query params
+export interface StoryDetailResponse {
+  story_id: number;
+  title: string;
   genre: string;
+  created_at: string;
+  current_chapter: number;
+  story_content: string; // Full story as formatted text
 }
 
-export interface SuggestionsResponse {
-  suggestions: string[]; // Five hardcoded prompt suggestions
+// Suggestions types - now uses GET with query params
+export interface SuggestionResponse {
+  genre: string;
+  prompts: string[];
+}
+
+// Genre and Author types for additional endpoints
+export interface GenreResponse {
+  genre_id: number;
+  genre_name: string;
+}
+
+export interface AuthorResponse {
+  author_id: number;
+  author_name: string;
+  genre_id?: number;
 }
 
 // Common API response wrapper
@@ -101,23 +109,33 @@ export type Genre =
   | 'comedy'
   | 'drama';
 
-// Popular authors for preferences
+// Popular authors for preferences - updated to match backend database
 export const POPULAR_AUTHORS = [
-  'J.K. Rowling',
-  'Stephen King',
-  'George R.R. Martin',
-  'Agatha Christie',
-  'Isaac Asimov',
-  'J.R.R. Tolkien',
-  'Neil Gaiman',
-  'Margaret Atwood',
-  'Ray Bradbury',
-  'Terry Pratchett',
-  'Brandon Sanderson',
-  'Ursula K. Le Guin',
-  'Douglas Adams',
-  'Frank Herbert',
-  'Gillian Flynn'
+  { id: 1, name: 'J.R.R. Tolkien' },
+  { id: 2, name: 'George R.R. Martin' },
+  { id: 3, name: 'Ursula K. Le Guin' },
+  { id: 4, name: 'Brandon Sanderson' },
+  { id: 5, name: 'Robin Hobb' },
+  { id: 6, name: 'Isaac Asimov' },
+  { id: 7, name: 'Philip K. Dick' },
+  { id: 8, name: 'Arthur C. Clarke' },
+  { id: 10, name: 'Ray Bradbury' },
+  { id: 11, name: 'Agatha Christie' },
+  { id: 12, name: 'Arthur Conan Doyle' },
+  { id: 13, name: 'Dorothy L. Sayers' },
+  { id: 14, name: 'Raymond Chandler' },
+  { id: 16, name: 'Stephen King' },
+  { id: 17, name: 'H.P. Lovecraft' },
+  { id: 18, name: 'Clive Barker' },
+  { id: 19, name: 'Shirley Jackson' },
+  { id: 20, name: 'Edgar Allan Poe' },
+  { id: 21, name: 'Jane Austen' },
+  { id: 22, name: 'Nicholas Sparks' },
+  { id: 23, name: 'Nora Roberts' },
+  { id: 24, name: 'Emily Brontë' },
+  { id: 26, name: 'Jules Verne' },
+  { id: 27, name: 'Robert Louis Stevenson' },
+  { id: 28, name: 'Ernest Hemingway' }
 ] as const;
 
 export type PreferredAuthor = typeof POPULAR_AUTHORS[number]; 

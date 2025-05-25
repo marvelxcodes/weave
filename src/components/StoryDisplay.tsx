@@ -37,8 +37,8 @@ export const StoryDisplay: React.FC<StoryDisplayProps> = ({
             >
               <div className="flex items-center justify-center space-x-3 mb-6">
                 <div className="w-4 h-4 bg-neon-cyan rounded-full animate-neon-pulse shadow-neon-cyan"></div>
-                <div className="w-4 h-4 bg-neon-pink rounded-full animate-neon-pulse shadow-neon-pink" style={{ animationDelay: '0.2s' }}></div>
-                <div className="w-4 h-4 bg-neon-purple rounded-full animate-neon-pulse shadow-neon-purple" style={{ animationDelay: '0.4s' }}></div>
+                				<div className="w-4 h-4 bg-white rounded-full animate-neon-pulse shadow-[0_0_20px_rgba(255,255,255,0.5)]" style={{ animationDelay: '0.2s' }}></div>
+                				<div className="w-4 h-4 bg-gray-300 rounded-full animate-neon-pulse shadow-[0_0_20px_rgba(209,213,219,0.5)]" style={{ animationDelay: '0.4s' }}></div>
               </div>
               
               <motion.p 
@@ -131,7 +131,7 @@ export const StoryDisplay: React.FC<StoryDisplayProps> = ({
                 className="mt-6 pt-3 border-t border-neon-cyan/30 flex items-center justify-between"
               >
                 <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-neon-pink rounded-full animate-circuit-pulse" />
+                  					<div className="w-2 h-2 bg-white rounded-full animate-circuit-pulse" />
                   <span className="cyber-text text-xs text-neon-cyan/60 font-rajdhani">
                     SEGMENT ID: {segment.id.slice(0, 8)}
                   </span>
@@ -205,8 +205,8 @@ export const StoryDisplay: React.FC<StoryDisplayProps> = ({
                     style={{
                       left: `${20 + i * 15}%`,
                       top: `${30 + (i % 2) * 40}%`,
-                      background: i % 3 === 0 ? 'var(--neon-cyan)' : i % 3 === 1 ? 'var(--neon-pink)' : 'var(--matrix-green)',
-                      boxShadow: `0 0 8px ${i % 3 === 0 ? 'var(--neon-cyan)' : i % 3 === 1 ? 'var(--neon-pink)' : 'var(--matrix-green)'}`,
+                      					background: i % 3 === 0 ? 'var(--neon-cyan)' : i % 3 === 1 ? 'var(--neon-white)' : 'var(--matrix-green)',
+					boxShadow: `0 0 8px ${i % 3 === 0 ? 'var(--neon-cyan)' : i % 3 === 1 ? 'var(--neon-white)' : 'var(--matrix-green)'}`,
                     }}
                     animate={{
                       y: [-5, 5, -5],
