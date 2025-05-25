@@ -126,19 +126,35 @@ class DatabaseManager:
             print(f"Error getting story progress: {e}")
             return None
     
-    def update_story_progress(self, user_id: str, story_id: int, chapter_num: int, choice: int) -> bool:
+    def update_story_progress(self, user_id: str, story_id: int, chapter_num: int) -> bool:
         """Update story progress"""
         try:
             with self.get_connection() as conn:
                 cursor = conn.cursor()
                 query = """
                     INSERT INTO story_progress (user_id, story_id, chapter_num, choice, timestamp) 
-                    VALUES (%s, %s, %s, %s, %s)
+                    VALUES (%s, %s, %s, -1, %s)
                 """
-                cursor.execute(query, (user_id, story_id, chapter_num, choice, datetime.now()))
+                cursor.execute(query, (user_id, story_id, chapter_num, datetime.now()))
                 return cursor.rowcount > 0
         except Error as e:
             print(f"Error updating story progress: {e}")
+            return False
+
+    def update_previous_choice(self, user_id: str, story_id: int, chapter_num:int, choice: int) -> bool:
+        """Update previous story choice"""
+        try:
+            with self.get_connection() as conn:
+                cursor = conn.cursor()
+                query = """
+                    UPDATE story_progress
+                    SET choice=%s
+                    WHERE user_id=%s and story_id=%s and chapter_num=%s
+                """
+                cursor.execute(query, (choice, user_id, story_id, chapter_num))
+                return cursor.rowcount > 0
+        except Error as e:
+            print(f"Error updating previous story choice: {e}")
             return False
     
     def get_user_stories(self, user_id: str) -> List[Dict]:
