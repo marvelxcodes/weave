@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const externalApi = axios.create({
-  baseURL: process.env.EXTERNAL_API_URL || 'https://ec2-54-252-168-199.ap-southeast-2.compute.amazonaws.com',
+  baseURL: process.env.NEXT_PUBLIC_EXTERNAL_API_URL || 'https://ec2-54-252-168-199.ap-southeast-2.compute.amazonaws.com',
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
