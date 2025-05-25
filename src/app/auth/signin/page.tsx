@@ -5,7 +5,7 @@ import { signIn, getSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { User, Lock, Sparkles } from 'lucide-react';
+import { User, Lock, Zap } from 'lucide-react';
 
 export default function SignInPage() {
   const [email, setEmail] = useState('');
@@ -27,7 +27,7 @@ export default function SignInPage() {
       });
 
       if (result?.error) {
-        setError('Invalid email or password');
+        setError('Neural access denied - invalid credentials');
       } else {
         const session = await getSession();
         if (session) {
@@ -35,21 +35,28 @@ export default function SignInPage() {
         }
       }
     } catch {
-      setError('An error occurred. Please try again.');
+      setError('System error occurred - retry connection');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-900/20 to-amber-800/10 
-                    flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black 
+                    flex items-center justify-center p-4 relative">
+      {/* Cyberpunk background effects */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl"></div>
+      </div>
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="bg-gradient-to-br from-amber-900/80 to-amber-800/60 backdrop-blur-md 
-                 rounded-xl border border-amber-600/50 p-8 w-full max-w-md shadow-2xl"
+        className="glass-surface neon-border rounded-xl p-8 w-full max-w-md 
+                 shadow-[0_0_50px_rgba(0,255,255,0.3)] relative z-10"
       >
         <div className="text-center mb-8">
           <motion.div
@@ -58,14 +65,14 @@ export default function SignInPage() {
             transition={{ delay: 0.2 }}
             className="flex items-center justify-center mb-4"
           >
-            <Sparkles className="text-amber-400 mr-2" size={32} />
-            <h1 className="text-3xl font-bold gold-text decorative-text">
+            <Zap className="text-cyan-400 mr-2 neon-glow" size={32} />
+            <h1 className="text-3xl font-bold neon-text">
               WEAVE
             </h1>
-            <Sparkles className="text-amber-400 ml-2" size={32} />
+            <Zap className="text-cyan-400 ml-2 neon-glow" size={32} />
           </motion.div>
-          <p className="text-amber-200 antique-text">
-            Welcome back, storyteller
+          <p className="text-cyan-200 cyber-text">
+            Access Neural Interface
           </p>
         </div>
 
@@ -75,21 +82,21 @@ export default function SignInPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <label className="block text-amber-300 decorative-text mb-2">
-              Email
+            <label className="block text-cyan-300 cyber-text mb-2 font-medium">
+              Neural Address
             </label>
             <div className="relative">
               <User className="absolute left-3 top-1/2 transform -translate-y-1/2 
-                            text-amber-400" size={20} />
+                            text-cyan-400" size={20} />
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 rounded-lg border-2 border-amber-600/40 
-                         bg-black/30 backdrop-blur-sm text-amber-100 placeholder-amber-300/50
-                         focus:border-amber-400/80 focus:outline-none transition-all duration-300
-                         antique-text"
-                placeholder="Enter your email"
+                className="w-full pl-12 pr-4 py-3 rounded-lg border-2 border-cyan-500/40 
+                         glass-surface text-cyan-100 placeholder-cyan-300/50
+                         focus:border-cyan-400 focus:outline-none transition-all duration-300
+                         cyber-text focus:shadow-[0_0_20px_rgba(0,255,255,0.3)]"
+                placeholder="Enter neural address"
                 required
               />
             </div>
@@ -100,21 +107,21 @@ export default function SignInPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4 }}
           >
-            <label className="block text-amber-300 decorative-text mb-2">
-              Password
+            <label className="block text-cyan-300 cyber-text mb-2 font-medium">
+              Security Protocol
             </label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 
-                            text-amber-400" size={20} />
+                            text-cyan-400" size={20} />
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 rounded-lg border-2 border-amber-600/40 
-                         bg-black/30 backdrop-blur-sm text-amber-100 placeholder-amber-300/50
-                         focus:border-amber-400/80 focus:outline-none transition-all duration-300
-                         antique-text"
-                placeholder="Enter your password"
+                className="w-full pl-12 pr-4 py-3 rounded-lg border-2 border-cyan-500/40 
+                         glass-surface text-cyan-100 placeholder-cyan-300/50
+                         focus:border-cyan-400 focus:outline-none transition-all duration-300
+                         cyber-text focus:shadow-[0_0_20px_rgba(0,255,255,0.3)]"
+                placeholder="Enter security code"
                 required
               />
             </div>
@@ -124,7 +131,9 @@ export default function SignInPage() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-red-400 text-sm antique-text text-center"
+              className="text-red-400 text-sm cyber-text text-center p-3 
+                        glass-surface border border-red-500/50 rounded-lg
+                        shadow-[0_0_20px_rgba(255,0,0,0.3)]"
             >
               {error}
             </motion.div>
@@ -135,11 +144,12 @@ export default function SignInPage() {
             disabled={isLoading}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="w-full py-3 bg-gradient-to-r from-amber-600 to-amber-700 
-                     text-white rounded-lg border-2 border-amber-500 
-                     hover:shadow-lg hover:shadow-amber-500/30 
+            className="w-full py-3 bg-gradient-to-r from-cyan-600 to-blue-600 
+                     text-white rounded-lg border-2 border-cyan-500 
+                     hover:shadow-[0_0_30px_rgba(0,255,255,0.5)]
                      disabled:opacity-50 disabled:cursor-not-allowed
-                     transition-all duration-300 decorative-text font-semibold"
+                     transition-all duration-300 cyber-text font-semibold
+                     hover:from-cyan-500 hover:to-blue-500"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
@@ -148,10 +158,10 @@ export default function SignInPage() {
               <div className="flex items-center justify-center space-x-2">
                 <div className="w-4 h-4 border-2 border-white/30 border-t-white 
                               rounded-full animate-spin" />
-                <span>Signing In...</span>
+                <span>CONNECTING...</span>
               </div>
             ) : (
-              'Sign In'
+              'CONNECT TO MATRIX'
             )}
           </motion.button>
         </form>
@@ -162,14 +172,15 @@ export default function SignInPage() {
           transition={{ delay: 0.6 }}
           className="mt-6 text-center"
         >
-          <p className="text-amber-300/80 antique-text">
-            Don&apos;t have an account?{' '}
+          <p className="text-cyan-300/80 cyber-text">
+            Need neural interface?{' '}
             <Link 
               href="/auth/signup" 
-              className="text-amber-200 hover:text-amber-100 transition-colors 
-                       underline decoration-amber-400/50 hover:decoration-amber-400"
+              className="text-cyan-200 hover:text-cyan-100 transition-colors 
+                       underline decoration-cyan-400/50 hover:decoration-cyan-400
+                       hover:shadow-[0_0_10px_rgba(0,255,255,0.3)]"
             >
-              Sign up
+              Initialize System
             </Link>
           </p>
         </motion.div>
@@ -182,10 +193,10 @@ export default function SignInPage() {
         >
           <Link 
             href="/" 
-            className="text-amber-400 hover:text-amber-300 transition-colors 
-                     antique-text text-sm"
+            className="text-cyan-400 hover:text-cyan-300 transition-colors 
+                     cyber-text text-sm hover:shadow-[0_0_10px_rgba(0,255,255,0.3)]"
           >
-            ← Back to Stories
+            ← Return to Matrix
           </Link>
         </motion.div>
       </motion.div>

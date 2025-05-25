@@ -29,9 +29,9 @@ export const ChoiceSelector: React.FC<ChoiceSelectorProps> = ({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
-              className="text-center text-amber-300 decorative-text text-xl mb-6"
+              className="text-center text-neon-cyan cyber-text text-xl mb-6 animate-neon-pulse font-rajdhani font-semibold"
             >
-              Choose Your Path
+              SELECT NEURAL PATHWAY
             </motion.h3>
             
             <div className="grid gap-4 md:grid-cols-2">
@@ -47,67 +47,120 @@ export const ChoiceSelector: React.FC<ChoiceSelectorProps> = ({
                   }}
                   whileHover={{ 
                     scale: 1.02,
-                    boxShadow: "0 0 20px rgba(212, 175, 55, 0.3)"
+                    boxShadow: "0 0 30px rgba(0, 255, 255, 0.4)"
                   }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => onChoiceSelect(choice)}
-                  className="group relative bg-gradient-to-br from-amber-900/40 to-amber-800/20 
-                           backdrop-blur-sm border border-amber-600/40 rounded-lg p-6 
-                           hover:border-amber-500/60 transition-all duration-300
-                           text-left overflow-hidden"
+                  className="group relative hologram neon-border rounded-lg p-6 
+                           hover:border-neon-cyan/80 transition-all duration-300
+                           text-left overflow-hidden hover:animate-hologram-flicker
+                           data-stream circuit-pattern"
                 >
                   {/* Background glow effect */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent 
+                  <div className="absolute inset-0 bg-cyber-gradient 
                                 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   
                   {/* Choice number */}
                   <div className="absolute top-4 right-4 w-8 h-8 rounded-full 
-                                bg-amber-600/30 border border-amber-500/50 
-                                flex items-center justify-center">
-                    <span className="text-amber-300 font-bold decorative-text">
+                                glass-surface border-2 border-neon-cyan/50 
+                                flex items-center justify-center
+                                shadow-neon-cyan animate-circuit-pulse">
+                    <span className="text-neon-cyan font-bold cyber-text font-orbitron">
                       {index + 1}
                     </span>
                   </div>
                   
                   {/* Choice text */}
-                  <p className="text-amber-100 antique-text text-lg leading-relaxed pr-12">
+                  <p className="text-cyan-100 cyber-text text-lg leading-relaxed pr-12 font-rajdhani relative z-10">
                     {choice.text}
                   </p>
                   
-                  {/* Decorative corner elements */}
-                  <div className="absolute top-2 left-2 w-3 h-3 border-l-2 border-t-2 
-                                border-amber-500/40 group-hover:border-amber-400/60 
-                                transition-colors duration-300" />
-                  <div className="absolute bottom-2 right-2 w-3 h-3 border-r-2 border-b-2 
-                                border-amber-500/40 group-hover:border-amber-400/60 
-                                transition-colors duration-300" />
+                  {/* Enhanced decorative corner elements */}
+                  <div className="absolute top-2 left-2 w-4 h-4 border-l-2 border-t-2 
+                                border-neon-cyan/40 group-hover:border-neon-cyan/80 
+                                transition-colors duration-300
+                                shadow-neon-cyan animate-cyber-float" />
+                  <div className="absolute bottom-2 right-2 w-4 h-4 border-r-2 border-b-2 
+                                border-neon-cyan/40 group-hover:border-neon-cyan/80 
+                                transition-colors duration-300
+                                shadow-neon-cyan animate-cyber-float" 
+                                style={{ animationDelay: '0.5s' }} />
                   
-                  {/* Hover effect particles */}
+                  {/* Enhanced hover effect particles */}
                   <div className="absolute inset-0 opacity-0 group-hover:opacity-100 
                                 transition-opacity duration-300 pointer-events-none">
-                    {Array.from({ length: 3 }).map((_, i) => (
+                    {Array.from({ length: 5 }).map((_, i) => (
                       <motion.div
                         key={i}
-                        className="absolute w-1 h-1 bg-amber-400 rounded-full"
+                        className="absolute w-2 h-2 rounded-full"
                         style={{
-                          left: `${20 + i * 30}%`,
-                          top: `${30 + i * 20}%`,
+                          left: `${15 + i * 20}%`,
+                          top: `${20 + i * 15}%`,
+                          background: i % 3 === 0 ? 'var(--neon-cyan)' : i % 3 === 1 ? 'var(--neon-pink)' : 'var(--neon-purple)',
+                          boxShadow: `0 0 10px ${i % 3 === 0 ? 'var(--neon-cyan)' : i % 3 === 1 ? 'var(--neon-pink)' : 'var(--neon-purple)'}`,
                         }}
                         animate={{
                           y: [-2, -8, -2],
                           opacity: [0.3, 0.8, 0.3],
+                          scale: [0.8, 1.2, 0.8],
                         }}
                         transition={{
                           duration: 2,
                           repeat: Infinity,
-                          delay: i * 0.3,
+                          delay: i * 0.2,
                         }}
                       />
                     ))}
                   </div>
+
+                  {/* Enhanced data stream effect */}
+                  <div className="absolute left-0 top-0 w-full h-full opacity-0 group-hover:opacity-30 
+                                transition-opacity duration-300 pointer-events-none overflow-hidden">
+                    {Array.from({ length: 8 }).map((_, i) => (
+                      <motion.div
+                        key={i}
+                        className="absolute w-px h-full bg-gradient-to-b from-transparent via-neon-cyan to-transparent"
+                        style={{ left: `${i * 12.5}%` }}
+                        animate={{
+                          y: ['-100%', '100%'],
+                        }}
+                        transition={{
+                          duration: 1.5,
+                          repeat: Infinity,
+                          delay: i * 0.15,
+                          ease: "linear"
+                        }}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Scanline effect */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-20 
+                                transition-opacity duration-300 pointer-events-none">
+                    <div className="scanlines w-full h-full" />
+                  </div>
+
+                  {/* Glitch effect on hover */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-10 
+                                transition-opacity duration-300 pointer-events-none
+                                bg-neon-pink animate-glitch" 
+                                style={{ animationDuration: '0.1s' }} />
                 </motion.button>
               ))}
             </div>
+
+            {/* Additional UI elements */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1 }}
+              className="mt-6 text-center"
+            >
+              <div className="inline-flex items-center space-x-2 glass-surface px-4 py-2 rounded-lg border border-neon-cyan/30">
+                <div className="w-2 h-2 bg-matrix-green rounded-full animate-neon-pulse" />
+                <span className="cyber-text text-sm text-neon-cyan/80">DECISION MATRIX ACTIVE</span>
+              </div>
+            </motion.div>
           </div>
         </motion.div>
       )}

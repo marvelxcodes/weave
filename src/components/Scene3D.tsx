@@ -19,8 +19,8 @@ export const Scene3D: React.FC<Scene3DProps> = ({ bookOpen = false, onBookIntera
         shadows
         camera={{ position: [0, 5, 10], fov: 60 }}
         gl={{ 
-          antialias: true,
           alpha: true,
+          antialias: true,
           powerPreference: "high-performance"
         }}
       >

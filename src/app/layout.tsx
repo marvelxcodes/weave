@@ -1,23 +1,23 @@
 import type { Metadata } from "next";
-import { Cinzel, Cinzel_Decorative } from "next/font/google";
+import { Orbitron, Rajdhani } from "next/font/google";
 import { SessionProvider } from "@/components/providers/SessionProvider";
 import "./globals.css";
 
-const cinzel = Cinzel({
-  variable: "--font-cinzel",
+const orbitron = Orbitron({
+  variable: "--font-orbitron",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700", "800", "900"],
 });
 
-const cinzelDecorative = Cinzel_Decorative({
-  variable: "--font-cinzel-decorative",
+const rajdhani = Rajdhani({
+  variable: "--font-rajdhani",
   subsets: ["latin"],
-  weight: ["400", "700", "900"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
-  title: "Weave - Interactive Story Generator",
-  description: "Create and explore interactive stories in an immersive 3D environment",
+  title: "WEAVE - Cybernetic Story Matrix",
+  description: "Enter the digital realm of interactive cyberpunk narratives",
 };
 
 export default function RootLayout({
@@ -28,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${cinzel.variable} ${cinzelDecorative.variable} antialiased`}
+        className={`${orbitron.variable} ${rajdhani.variable} antialiased`}
       >
         <SessionProvider>
           {children}

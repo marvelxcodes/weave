@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Sparkles, X } from 'lucide-react';
+import { Send, Zap, X } from 'lucide-react';
 
 interface StoryPromptProps {
 	onSubmit: (prompt: string) => void;
@@ -31,11 +31,11 @@ export const StoryPrompt: React.FC<StoryPromptProps> = ({ onSubmit, onClose, isV
 	};
 
 	const suggestions = [
-		'A mysterious door appears in an ancient library...',
-		'You wake up in a world where magic has just returned...',
-		'A letter arrives that changes everything...',
-		'The last dragon has been spotted in the mountains...',
-		'You inherit a peculiar antique shop...',
+		'A neural interface activates in a cyberpunk metropolis...',
+		'You discover a hidden data cache in the digital underground...',
+		'An encrypted message arrives from the resistance...',
+		'The last AI awakens in an abandoned server farm...',
+		'You inherit access to a forbidden neural network...',
 	];
 
 	return (
@@ -46,28 +46,37 @@ export const StoryPrompt: React.FC<StoryPromptProps> = ({ onSubmit, onClose, isV
 					animate={{ opacity: 1, scale: 1 }}
 					exit={{ opacity: 0, scale: 0.9 }}
 					transition={{ duration: 0.5 }}
-					className="absolute inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm cursor-pointer"
+					className="absolute inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm cursor-pointer"
 					onClick={handleBackgroundClick}
 				>
 					<motion.div
 						initial={{ y: 50, opacity: 0 }}
 						animate={{ y: 0, opacity: 1 }}
 						transition={{ delay: 0.2, duration: 0.5 }}
-						className="bg-gradient-to-br from-amber-900/80 to-amber-800/60 backdrop-blur-md
-                     rounded-xl border border-amber-600/50 p-8 max-w-2xl w-full mx-4
-                     shadow-2xl relative cursor-default"
+						className="glass-surface neon-border rounded-xl p-8 max-w-2xl w-full mx-4
+                     shadow-cyber-glow relative cursor-default hologram data-stream circuit-pattern overflow-hidden"
 						onClick={(e) => e.stopPropagation()}
 					>
+						{/* Background effects */}
+						<div className="absolute inset-0 scanlines opacity-10 pointer-events-none" />
+						
+						{/* Corner decorations */}
+						<div className="absolute top-2 left-2 w-6 h-6 border-l-2 border-t-2 border-neon-cyan/60 animate-cyber-float" />
+						<div className="absolute top-2 right-2 w-6 h-6 border-r-2 border-t-2 border-neon-cyan/60 animate-cyber-float" style={{ animationDelay: '0.5s' }} />
+						<div className="absolute bottom-2 left-2 w-6 h-6 border-l-2 border-b-2 border-neon-cyan/60 animate-cyber-float" style={{ animationDelay: '1s' }} />
+						<div className="absolute bottom-2 right-2 w-6 h-6 border-r-2 border-b-2 border-neon-cyan/60 animate-cyber-float" style={{ animationDelay: '1.5s' }} />
+
 						{/* Close button */}
 						<motion.button
 							initial={{ opacity: 0 }}
 							animate={{ opacity: 1 }}
 							transition={{ delay: 0.3 }}
 							onClick={onClose}
-							className="absolute top-4 right-4 p-2 rounded-lg border border-amber-600/40
-                         bg-black/20 backdrop-blur-sm text-amber-300 hover:text-amber-100
-                         hover:border-amber-500/60 hover:bg-black/40 transition-all duration-300
-                         disabled:opacity-50 disabled:cursor-not-allowed"
+							className="absolute top-4 right-4 p-2 rounded-lg border-2 border-neon-cyan/40
+                         glass-surface text-neon-cyan hover:text-cyan-100
+                         hover:border-neon-cyan/80 hover:shadow-neon-cyan
+                         transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed
+                         z-10 animate-circuit-pulse"
 							disabled={isGenerating}
 							whileHover={{ scale: isGenerating ? 1 : 1.1 }}
 							whileTap={{ scale: isGenerating ? 1 : 0.9 }}
@@ -79,19 +88,19 @@ export const StoryPrompt: React.FC<StoryPromptProps> = ({ onSubmit, onClose, isV
 							initial={{ opacity: 0 }}
 							animate={{ opacity: 1 }}
 							transition={{ delay: 0.4 }}
-							className="text-center mb-6"
+							className="text-center mb-6 relative z-10"
 						>
 							<div className="flex items-center justify-center mb-4">
-								<Sparkles className="text-amber-400 mr-2" size={24} />
-								<h2 className="text-2xl font-bold gold-text decorative-text">Begin Your Tale</h2>
-								<Sparkles className="text-amber-400 ml-2" size={24} />
+								<Zap className="text-neon-cyan mr-2 animate-neon-pulse" size={24} />
+								<h2 className="text-2xl font-bold neon-text animate-neon-pulse font-orbitron">INITIALIZE NARRATIVE</h2>
+								<Zap className="text-neon-cyan ml-2 animate-neon-pulse" size={24} />
 							</div>
-							<p className="text-amber-200 antique-text">
-								Describe the beginning of your story, and watch it come to life
+							<p className="text-neon-cyan cyber-text font-rajdhani">
+								Input narrative parameters to generate cybernetic story matrix
 							</p>
 						</motion.div>
 
-						<form onSubmit={handleSubmit} className="space-y-6">
+						<form onSubmit={handleSubmit} className="space-y-6 relative z-10">
 							<motion.div
 								initial={{ opacity: 0, y: 20 }}
 								animate={{ opacity: 1, y: 0 }}
@@ -103,35 +112,65 @@ export const StoryPrompt: React.FC<StoryPromptProps> = ({ onSubmit, onClose, isV
 									onChange={(e) => setPrompt(e.target.value)}
 									onFocus={() => setIsFocused(true)}
 									onBlur={() => setIsFocused(false)}
-									placeholder="Once upon a time..."
+									placeholder="Initialize narrative protocol..."
 									className={`
                     w-full h-32 px-4 py-3 rounded-lg border-2 transition-all duration-300
-                    bg-black/30 backdrop-blur-sm text-amber-100 placeholder-amber-300/50
-                    resize-none antique-text text-lg leading-relaxed
-                    ${isFocused ? 'border-amber-400/80 shadow-lg shadow-amber-500/20' : 'border-amber-600/40'}
+                    cyber-input font-rajdhani text-lg leading-relaxed
+                    ${isFocused ? 'border-neon-cyan/80 shadow-neon-cyan' : 'border-neon-cyan/40'}
                   `}
 									disabled={isGenerating}
 								/>
 
-								{/* Decorative corners */}
+								{/* Enhanced decorative corners */}
 								<div
 									className="absolute top-1 left-1 w-4 h-4 border-l-2 border-t-2
-                              border-amber-500/60 pointer-events-none border-sm"
+                              border-neon-cyan/60 pointer-events-none animate-cyber-float"
 								/>
 								<div
-									className="absolute -bottom-0 -right-2 w-4 h-4 border-r-2 border-b-2
-                              border-amber-500/60 pointer-events-none rounded-sm"
+									className="absolute bottom-1 right-1 w-4 h-4 border-r-2 border-b-2
+                              border-neon-cyan/60 pointer-events-none animate-cyber-float"
+									style={{ animationDelay: '0.5s' }}
 								/>
+
+								{/* Enhanced data stream effect */}
+								{isFocused && (
+									<div className="absolute inset-0 opacity-30 pointer-events-none overflow-hidden rounded-lg">
+										{Array.from({ length: 6 }).map((_, i) => (
+											<motion.div
+												key={i}
+												className="absolute w-px h-full bg-gradient-to-b from-transparent via-neon-cyan to-transparent"
+												style={{ left: `${15 + i * 15}%` }}
+												animate={{
+													y: ['-100%', '100%'],
+												}}
+												transition={{
+													duration: 1.5,
+													repeat: Infinity,
+													delay: i * 0.2,
+													ease: "linear"
+												}}
+											/>
+										))}
+									</div>
+								)}
+
+								{/* Scanline effect when focused */}
+								{isFocused && (
+									<div className="absolute inset-0 scanlines opacity-20 pointer-events-none rounded-lg" />
+								)}
 							</motion.div>
 
-							{/* Suggestions */}
+							{/* Enhanced suggestions */}
 							<motion.div
 								initial={{ opacity: 0 }}
 								animate={{ opacity: 1 }}
 								transition={{ delay: 0.8 }}
-								className="space-y-2"
+								className="space-y-3"
 							>
-								<p className="text-amber-300 text-sm decorative-text">Need inspiration? Try one of these:</p>
+								<div className="flex items-center space-x-2">
+									<div className="w-2 h-2 bg-matrix-green rounded-full animate-neon-pulse" />
+									<p className="text-neon-cyan text-sm cyber-text font-rajdhani font-medium">Neural templates available:</p>
+								</div>
 								<div className="flex flex-wrap gap-2">
 									{suggestions.map((suggestion, index) => (
 										<motion.button
@@ -143,9 +182,10 @@ export const StoryPrompt: React.FC<StoryPromptProps> = ({ onSubmit, onClose, isV
 											whileHover={{ scale: 1.05 }}
 											whileTap={{ scale: 0.95 }}
 											onClick={() => setPrompt(suggestion)}
-											className="px-3 py-1 text-xs bg-amber-800/40 border border-amber-600/40
-                               rounded-full text-amber-200 hover:bg-amber-700/40
-                               hover:border-amber-500/60 transition-all duration-200"
+											className="px-3 py-1 text-xs hologram border border-neon-cyan/40
+                               rounded-full text-neon-cyan hover:border-neon-cyan/80
+                               hover:shadow-neon-cyan transition-all duration-200
+                               data-stream font-rajdhani"
 											disabled={isGenerating}
 										>
 											{suggestion}
@@ -154,7 +194,7 @@ export const StoryPrompt: React.FC<StoryPromptProps> = ({ onSubmit, onClose, isV
 								</div>
 							</motion.div>
 
-							{/* Submit button */}
+							{/* Enhanced submit button */}
 							<motion.div
 								initial={{ opacity: 0, y: 20 }}
 								animate={{ opacity: 1, y: 0 }}
@@ -167,24 +207,24 @@ export const StoryPrompt: React.FC<StoryPromptProps> = ({ onSubmit, onClose, isV
 									whileHover={{ scale: prompt.trim() && !isGenerating ? 1.05 : 1 }}
 									whileTap={{ scale: prompt.trim() && !isGenerating ? 0.95 : 1 }}
 									className={`
-                    flex items-center space-x-2 px-8 py-3 rounded-lg border-2
-                    transition-all duration-300 decorative-text font-semibold
+                    cyber-button flex items-center space-x-2 px-8 py-3 rounded-lg
+                    font-rajdhani font-semibold text-lg relative overflow-hidden
                     ${
 											prompt.trim() && !isGenerating
-												? 'bg-gradient-to-r from-amber-600 to-amber-700 border-amber-500 text-white hover:shadow-lg hover:shadow-amber-500/30'
-												: 'bg-gray-700/50 border-gray-600/50 text-gray-400 cursor-not-allowed'
+												? 'bg-cyber-gradient border-neon-cyan text-white hover:shadow-cyber-glow animate-circuit-pulse'
+												: 'glass-surface border-gray-600/50 text-gray-400 cursor-not-allowed opacity-50'
 										}
                   `}
 								>
 									{isGenerating ? (
 										<>
-											<div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-											<span>Weaving...</span>
+											<div className="cyber-spinner w-4 h-4" />
+											<span>PROCESSING...</span>
 										</>
 									) : (
 										<>
-											<Send size={18} />
-											<span>Begin Story</span>
+											<Send size={18} className="animate-cyber-float" />
+											<span>EXECUTE PROTOCOL</span>
 										</>
 									)}
 								</motion.button>

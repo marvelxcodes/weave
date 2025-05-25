@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma';
 
 export async function POST(request: NextRequest) {
   try {
-    const { name, email, password } = await request.json();
+    const { name, email, password, preferred_authors } = await request.json();
 
     if (!name || !email || !password) {
       return NextResponse.json(
@@ -34,6 +34,7 @@ export async function POST(request: NextRequest) {
         name,
         email,
         password: hashedPassword,
+        preferredAuthors: preferred_authors || [],
       }
     });
 
@@ -43,6 +44,7 @@ export async function POST(request: NextRequest) {
         id: user.id,
         name: user.name,
         email: user.email,
+        preferred_authors: user.preferredAuthors,
       }
     });
   } catch (error) {

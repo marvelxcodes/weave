@@ -1,17 +1,19 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Lock, Mail, Sparkles, User } from 'lucide-react';
+import { Lock, Mail, Zap, User, BookOpen } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import axios, { AxiosError } from 'axios';
+import { POPULAR_AUTHORS, PreferredAuthor } from '@/types/api';
 
 export default function SignUpPage() {
 	const [name, setName] = useState('');
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [confirmPassword, setConfirmPassword] = useState('');
+	const [preferredAuthors, setPreferredAuthors] = useState<string[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState('');
 	const router = useRouter();
@@ -22,13 +24,13 @@ export default function SignUpPage() {
 		setError('');
 
 		if (password !== confirmPassword) {
-			setError('Passwords do not match');
+			setError('Neural patterns do not match');
 			setIsLoading(false);
 			return;
 		}
 
 		if (password.length < 6) {
-			setError('Password must be at least 6 characters');
+			setError('Security protocol requires minimum 6 characters');
 			setIsLoading(false);
 			return;
 		}
@@ -38,14 +40,15 @@ export default function SignUpPage() {
 				name,
 				email,
 				password,
+				preferred_authors: preferredAuthors,
 			});
 
 			if (response.status === 200) {
-				router.push('/auth/signin?message=Account created successfully! Please sign in.');
+				router.push('/auth/signin?message=Neural interface initialized! Please connect.');
 			}
 		} catch (error) {
 			const axiosError = error as AxiosError<{ error: string }>;
-			setError(axiosError.response?.data?.error || 'An error occurred');
+			setError(axiosError.response?.data?.error || 'System error occurred');
 		} finally {
 			setIsLoading(false);
 		}
@@ -53,15 +56,23 @@ export default function SignUpPage() {
 
 	return (
 		<div
-			className="min-h-screen bg-gradient-to-br from-amber-900/20 to-amber-800/10
-                    flex items-start sm:items-center justify-center p-4 py-8 sm:py-4 overflow-y-auto"
+			className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black
+                    flex items-start sm:items-center justify-center p-4 py-8 sm:py-4 overflow-y-auto
+                    relative"
 		>
+			{/* Cyberpunk background effects */}
+			<div className="absolute inset-0 overflow-hidden pointer-events-none">
+				<div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl"></div>
+				<div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl"></div>
+				<div className="absolute top-1/2 left-1/2 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl"></div>
+			</div>
+
 			<motion.div
 				initial={{ opacity: 0, y: 20 }}
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ duration: 0.6 }}
-				className="bg-gradient-to-br from-amber-900/80 to-amber-800/60 backdrop-blur-md
-                 rounded-xl border border-amber-600/50 p-6 sm:p-8 w-full max-w-md shadow-2xl my-auto"
+				className="glass-surface neon-border rounded-xl p-6 sm:p-8 w-full max-w-md 
+                 shadow-[0_0_50px_rgba(0,255,255,0.3)] my-auto relative z-10"
 			>
 				<div className="text-center mb-8">
 					<motion.div
@@ -70,107 +81,139 @@ export default function SignUpPage() {
 						transition={{ delay: 0.2 }}
 						className="flex items-center justify-center mb-4"
 					>
-						<Sparkles className="text-amber-400 mr-2" size={32} />
-						<h1 className="text-3xl font-bold gold-text decorative-text">WEAVE</h1>
-						<Sparkles className="text-amber-400 ml-2" size={32} />
+						<Zap className="text-cyan-400 mr-2 neon-glow" size={32} />
+						<h1 className="text-3xl font-bold neon-text">WEAVE</h1>
+						<Zap className="text-cyan-400 ml-2 neon-glow" size={32} />
 					</motion.div>
-					<p className="text-amber-200 antique-text">Join the community of storytellers</p>
+					<p className="cyber-text">Initialize Neural Interface</p>
 				</div>
 
 				<form onSubmit={handleSubmit} className="space-y-6">
 					<motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
-						<label className="block text-amber-300 decorative-text mb-2">Name</label>
+						<label className="block text-cyan-300 cyber-text mb-2 font-medium">Identity Code</label>
 						<div className="relative">
 							<User
 								className="absolute left-3 top-1/2 transform -translate-y-1/2
-                            text-amber-400"
+                            text-cyan-400"
 								size={20}
 							/>
 							<input
 								type="text"
 								value={name}
 								onChange={(e) => setName(e.target.value)}
-								className="w-full pl-12 pr-4 py-3 rounded-lg border-2 border-amber-600/40
-                         bg-black/30 backdrop-blur-sm text-amber-100 placeholder-amber-300/50
-                         focus:border-amber-400/80 focus:outline-none transition-all duration-300
-                         antique-text"
-								placeholder="Enter your name"
+								className="w-full pl-12 pr-4 py-3 rounded-lg border-2 border-cyan-500/40
+                         glass-surface text-cyan-100 placeholder-cyan-300/50
+                         focus:border-cyan-400 focus:outline-none transition-all duration-300
+                         cyber-text focus:shadow-[0_0_20px_rgba(0,255,255,0.3)]"
+								placeholder="Enter your identity"
 								required
 							/>
 						</div>
 					</motion.div>
 
 					<motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}>
-						<label className="block text-amber-300 decorative-text mb-2">Email</label>
+						<label className="block text-cyan-300 cyber-text mb-2 font-medium">Neural Address</label>
 						<div className="relative">
 							<Mail
 								className="absolute left-3 top-1/2 transform -translate-y-1/2
-                            text-amber-400"
+                            text-cyan-400"
 								size={20}
 							/>
 							<input
 								type="email"
 								value={email}
 								onChange={(e) => setEmail(e.target.value)}
-								className="w-full pl-12 pr-4 py-3 rounded-lg border-2 border-amber-600/40
-                         bg-black/30 backdrop-blur-sm text-amber-100 placeholder-amber-300/50
-                         focus:border-amber-400/80 focus:outline-none transition-all duration-300
-                         antique-text"
-								placeholder="Enter your email"
+								className="w-full pl-12 pr-4 py-3 rounded-lg border-2 border-cyan-500/40
+                         glass-surface text-cyan-100 placeholder-cyan-300/50
+                         focus:border-cyan-400 focus:outline-none transition-all duration-300
+                         cyber-text focus:shadow-[0_0_20px_rgba(0,255,255,0.3)]"
+								placeholder="Enter neural address"
 								required
 							/>
 						</div>
 					</motion.div>
 
 					<motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }}>
-						<label className="block text-amber-300 decorative-text mb-2">Password</label>
+						<label className="block text-cyan-300 cyber-text mb-2 font-medium">Security Protocol</label>
 						<div className="relative">
 							<Lock
 								className="absolute left-3 top-1/2 transform -translate-y-1/2
-                            text-amber-400"
+                            text-cyan-400"
 								size={20}
 							/>
 							<input
 								type="password"
 								value={password}
 								onChange={(e) => setPassword(e.target.value)}
-								className="w-full pl-12 pr-4 py-3 rounded-lg border-2 border-amber-600/40
-                         bg-black/30 backdrop-blur-sm text-amber-100 placeholder-amber-300/50
-                         focus:border-amber-400/80 focus:outline-none transition-all duration-300
-                         antique-text"
-								placeholder="Enter your password"
+								className="w-full pl-12 pr-4 py-3 rounded-lg border-2 border-cyan-500/40
+                         glass-surface text-cyan-100 placeholder-cyan-300/50
+                         focus:border-cyan-400 focus:outline-none transition-all duration-300
+                         cyber-text focus:shadow-[0_0_20px_rgba(0,255,255,0.3)]"
+								placeholder="Enter security code"
 								required
 							/>
 						</div>
 					</motion.div>
 
 					<motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.6 }}>
-						<label className="block text-amber-300 decorative-text mb-2">Confirm Password</label>
+						<label className="block text-cyan-300 cyber-text mb-2 font-medium">Confirm Protocol</label>
 						<div className="relative">
 							<Lock
 								className="absolute left-3 top-1/2 transform -translate-y-1/2
-                            text-amber-400"
+                            text-cyan-400"
 								size={20}
 							/>
 							<input
 								type="password"
 								value={confirmPassword}
 								onChange={(e) => setConfirmPassword(e.target.value)}
-								className="w-full pl-12 pr-4 py-3 rounded-lg border-2 border-amber-600/40
-                         bg-black/30 backdrop-blur-sm text-amber-100 placeholder-amber-300/50
-                         focus:border-amber-400/80 focus:outline-none transition-all duration-300
-                         antique-text"
-								placeholder="Confirm your password"
+								className="w-full pl-12 pr-4 py-3 rounded-lg border-2 border-cyan-500/40
+                         glass-surface text-cyan-100 placeholder-cyan-300/50
+                         focus:border-cyan-400 focus:outline-none transition-all duration-300
+                         cyber-text focus:shadow-[0_0_20px_rgba(0,255,255,0.3)]"
+								placeholder="Confirm security code"
 								required
 							/>
 						</div>
+					</motion.div>
+
+					<motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.7 }}>
+						<label className="block text-cyan-300 cyber-text mb-3 font-medium">
+							<BookOpen className="inline mr-2" size={16} />
+							Preferred Authors (Optional)
+						</label>
+						<div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto glass-surface p-3 rounded-lg border border-cyan-500/40">
+							{POPULAR_AUTHORS.map((author) => (
+								<label key={author} className="flex items-center space-x-2 cursor-pointer">
+									<input
+										type="checkbox"
+										checked={preferredAuthors.includes(author)}
+										onChange={(e) => {
+											if (e.target.checked) {
+												setPreferredAuthors([...preferredAuthors, author]);
+											} else {
+												setPreferredAuthors(preferredAuthors.filter(a => a !== author));
+											}
+										}}
+										className="w-4 h-4 text-cyan-400 bg-transparent border-2 border-cyan-500/40 
+                                   rounded focus:ring-cyan-400 focus:ring-2"
+									/>
+									<span className="text-cyan-200 text-sm cyber-text">{author}</span>
+								</label>
+							))}
+						</div>
+						<p className="text-cyan-400/60 text-xs mt-2 cyber-text">
+							Select authors whose writing style you enjoy. This helps personalize your story experience.
+						</p>
 					</motion.div>
 
 					{error && (
 						<motion.div
 							initial={{ opacity: 0 }}
 							animate={{ opacity: 1 }}
-							className="text-red-400 text-sm antique-text text-center"
+							className="text-red-400 text-sm cyber-text text-center p-3 
+                            glass-surface border border-red-500/50 rounded-lg
+                            shadow-[0_0_20px_rgba(255,0,0,0.3)]"
 						>
 							{error}
 						</motion.div>
@@ -181,14 +224,15 @@ export default function SignUpPage() {
 						disabled={isLoading}
 						whileHover={{ scale: 1.02 }}
 						whileTap={{ scale: 0.98 }}
-						className="w-full py-3 bg-gradient-to-r from-amber-600 to-amber-700
-                     text-white rounded-lg border-2 border-amber-500
-                     hover:shadow-lg hover:shadow-amber-500/30
+						className="w-full py-3 bg-gradient-to-r from-cyan-600 to-blue-600
+                     text-white rounded-lg border-2 border-cyan-500
+                     hover:shadow-[0_0_30px_rgba(0,255,255,0.5)]
                      disabled:opacity-50 disabled:cursor-not-allowed
-                     transition-all duration-300 decorative-text font-semibold"
+                     transition-all duration-300 cyber-text font-semibold
+                     hover:from-cyan-500 hover:to-blue-500"
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
-						transition={{ delay: 0.7 }}
+						transition={{ delay: 0.8 }}
 					>
 						{isLoading ? (
 							<div className="flex items-center justify-center space-x-2">
@@ -196,10 +240,10 @@ export default function SignUpPage() {
 									className="w-4 h-4 border-2 border-white/30 border-t-white
                               rounded-full animate-spin"
 								/>
-								<span>Creating Account...</span>
+								<span>INITIALIZING...</span>
 							</div>
 						) : (
-							'Create Account'
+							'INITIALIZE INTERFACE'
 						)}
 					</motion.button>
 				</form>
@@ -207,17 +251,18 @@ export default function SignUpPage() {
 				<motion.div
 					initial={{ opacity: 0 }}
 					animate={{ opacity: 1 }}
-					transition={{ delay: 0.8 }}
+					transition={{ delay: 0.9 }}
 					className="mt-6 text-center"
 				>
-					<p className="text-amber-300/80 antique-text">
-						Already have an account?{' '}
+					<p className="text-cyan-300/80 cyber-text">
+						Already connected?{' '}
 						<Link
 							href="/auth/signin"
-							className="text-amber-200 hover:text-amber-100 transition-colors
-                       underline decoration-amber-400/50 hover:decoration-amber-400"
+							className="text-cyan-200 hover:text-cyan-100 transition-colors
+                       underline decoration-cyan-400/50 hover:decoration-cyan-400
+                       hover:shadow-[0_0_10px_rgba(0,255,255,0.3)]"
 						>
-							Sign in
+							Access Matrix
 						</Link>
 					</p>
 				</motion.div>
@@ -225,15 +270,15 @@ export default function SignUpPage() {
 				<motion.div
 					initial={{ opacity: 0 }}
 					animate={{ opacity: 1 }}
-					transition={{ delay: 0.9 }}
+					transition={{ delay: 1.0 }}
 					className="mt-4 text-center"
 				>
 					<Link
 						href="/"
-						className="text-amber-400 hover:text-amber-300 transition-colors
-                     antique-text text-sm"
+						className="text-cyan-400 hover:text-cyan-300 transition-colors
+                     cyber-text text-sm hover:shadow-[0_0_10px_rgba(0,255,255,0.3)]"
 					>
-						← Back to Stories
+						← Return to Matrix
 					</Link>
 				</motion.div>
 			</motion.div>
