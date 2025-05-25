@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Optional
 import os
 from datetime import datetime
+import random
+
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -91,8 +93,15 @@ async def generate_story(story_data: StoryGeneration, db: DatabaseManager = Depe
             raise HTTPException(status_code=400, detail=f"No authors found for genre: {story_data.genre}")
         
         # Select first author for simplicity - you could implement preference logic here
-        selected_author = authors[0]
-        
+        preferred_authors = db.get_user_preferences(story_data.user_id, story_data.genre)
+
+        c = 2
+        x = 1/(len(preferred_authors)*c+len([author for author in authors if author not in preferred_authors]))
+        y = 2*x;
+        probabilities = [y if author in preferred_authors else x for author in authors]
+
+        selected_author = random.choices(authors, weights=probabilities, k=1)[0]
+
         # Generate story title
         story_title = f"{story_data.genre.title()} Adventure"
         

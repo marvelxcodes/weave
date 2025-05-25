@@ -68,16 +68,23 @@ class DatabaseManager:
             print(f"Error setting user preferences: {e}")
             return False
     
-    def get_user_preferences(self, user_id: str) -> List[int]:
+    def get_user_preferences(self, user_id: str, genre: str) -> List[int]:
         """Get user's preferred author IDs"""
         try:
             with self.get_connection() as conn:
                 cursor = conn.cursor()
-                cursor.execute("SELECT author_id FROM user_preferences WHERE user_id = %s", (user_id,))
+                query = """
+                    SELECT a.author_name FROM user_preferences u
+                    LEFT JOIN authors a on u.author_id = a.author_id
+                    LEFT JOIN genres g on g.genre_id = a.genre_id
+                    WHERE u.user_id = %s and g.genre_name = %s
+                """
+                cursor.execute(query, (user_id, genre))
                 return [row[0] for row in cursor.fetchall()]
         except Error as e:
             print(f"Error getting user preferences: {e}")
             return []
+
     
     def create_story(self, user_id: str, genre: str, title: str) -> Optional[int]:
         """Create a new story and return story_id"""
